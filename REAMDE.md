@@ -26,28 +26,41 @@ We are re-using our existing Vault cluster. The Vault admin configuration is loc
 
 #### Setup
 
-1. Enable the Azure secrets engine
-   ```shell
-   vault secrets enable azure
-   ```
+Below an admin uses the Vault Terraform Provider. This is found in the [main.tf file](https://gitlab.com/public-projects3/infrastructure-gcp/-/blob/master/terraform-vault-configuration/main.tf)
 
-2. Configure the secrets engine with account credentials
-   ```shell
-   vault write azure/config \
-    subscription_id=$AZURE_SUBSCRIPTION_ID \
-    tenant_id=$AZURE_TENANT_ID \
-    client_id=$AZURE_CLIENT_ID \
-    client_secret=$AZURE_CLIENT_SECRET
-   ```
+```
+resource "azurerm_resource_group" "myresourcegroup" {
+  name     = "${var.prefix}-jenkins"
+  location = var.location
+}
 
-3. Configure a role
-   ```shell
-    vault write azure/roles/edu-app ttl=1h azure_roles=-<<EOF
-    [
-      {
-        "role_name": "Contributor",
-        "scope": "/subscriptions/<Subscription_ID>/resourceGroups/vault-education"
-      }
-    ]
-    EOF
-   ```
+resource "vault_azure_secret_backend" "azure" {
+  subscription_id = var.subscription_id
+  tenant_id = var.tenant_id
+  client_secret = var.client_secret
+  client_id = var.client_id
+}
+
+resource "vault_azure_secret_backend_role" "jenkins" {
+  backend                     = vault_azure_secret_backend.azure.path
+  role                        = "jenkins"
+  ttl                         = 300
+  max_ttl                     = 600
+
+  azure_roles {
+    role_name = "Contributor"
+    scope =  "/subscriptions/${var.subscription_id}/resourceGroups/${azurerm_resource_group.myresourcegroup.name}"
+  }
+}
+```
+
+### Request Azure Creds Manually
+
+```shell
+vault policy write jenkins Vault/policies/jenkins_azure_policy.hcl
+vault token create -policy=jenkins
+VAULT_TOKEN=xxxxxx vault read azure/creds/jenkins
+```
+
+### Use an App Role
+

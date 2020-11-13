@@ -1,0 +1,16 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+pymongo = "==2.9"
+environs = "==6.1.0"
+requests = ">=2.20.0"
+Flask = "==1.1.1"
+hvac = "==0.10.0"
+
+[requires]
+python_version = "3.7"

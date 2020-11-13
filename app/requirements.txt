@@ -1,0 +1,5 @@
+Flask==1.1.1
+pymongo==2.9
+requests>=2.20.0
+environs==6.1.0
+hvac==0.10.0
