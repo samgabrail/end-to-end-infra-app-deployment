@@ -60,7 +60,7 @@ resource "azurerm_subnet" "subnet" {
   name                 = "${var.prefix}-subnet"
   virtual_network_name = azurerm_virtual_network.vnet.name
   resource_group_name  = data.azurerm_resource_group.myresourcegroup.name
-  address_prefix       = var.subnet_prefix
+  address_prefixes       = [var.subnet_prefix]
 }
 
 resource "azurerm_network_security_group" "jenkins-sg" {
@@ -109,7 +109,7 @@ resource "azurerm_network_interface" "jenkins-nic" {
   name                      = "${var.prefix}-jenkins-nic"
   location                  = var.location
   resource_group_name       = data.azurerm_resource_group.myresourcegroup.name
-  network_security_group_id = azurerm_network_security_group.jenkins-sg.id
+  // network_security_group_id = azurerm_network_security_group.jenkins-sg.id
 
   ip_configuration {
     name                          = "${var.prefix}-ipconfig"
@@ -117,6 +117,11 @@ resource "azurerm_network_interface" "jenkins-nic" {
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.jenkins-pip.id
   }
+}
+
+resource "azurerm_network_interface_security_group_association" "jenkins-sga" {
+  network_interface_id      = azurerm_network_interface.jenkins-nic.id
+  network_security_group_id = azurerm_network_security_group.jenkins-sg.id
 }
 
 resource "azurerm_public_ip" "jenkins-pip" {
