@@ -37,8 +37,8 @@
       "apt-add-repository 'deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main'",
       "apt-add-repository --yes --update ppa:ansible/ansible",
       "apt-get update",
-      "snap install docker vault terraform",
-      "apt-get -y install openjdk-8-jdk jenkins ansible",
+      "apt-get -y install jenkins vault terraform ansible docker",
+      "touch ",
 
       "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"
     ],

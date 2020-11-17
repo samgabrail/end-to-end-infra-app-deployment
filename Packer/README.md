@@ -11,5 +11,5 @@ Then add the Azure creds to the `variables.json` file
 ## Creating the Packer Image
 To create the template image execute
 ```shell
-packer build -var-file variables.json ubuntu18.json
+packer build -force -var-file variables.json ubuntu18.json
 ```
