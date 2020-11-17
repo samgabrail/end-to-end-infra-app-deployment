@@ -142,11 +142,10 @@ resource "azurerm_linux_virtual_machine" "jenkins" {
   tags = local.common_tags
   
   network_interface_ids         = [azurerm_network_interface.jenkins-nic.id]
-  delete_os_disk_on_termination = "true"
 
   admin_ssh_key {
     username   = "adminuser"
-    public_key = file("~/.ssh/id_rsa.pub")
+    public_key = file("/home/sam/.ssh/id_rsa.pub")
   }
 
   // storage_image_reference {
@@ -162,7 +161,6 @@ resource "azurerm_linux_virtual_machine" "jenkins" {
     name                  = "${var.prefix}-osdisk"
     storage_account_type  = "Standard_LRS"
     caching               = "ReadWrite"
-    create_option         = "FromImage"
   }
 
 }
