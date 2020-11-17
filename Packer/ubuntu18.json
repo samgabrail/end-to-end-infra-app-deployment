@@ -1,0 +1,47 @@
+{
+  "builders": [
+    {
+      "type": "azure-arm",
+
+      "client_id": "{{user `client_id`}}",
+      "client_secret": "{{user `client_secret`}}",
+      "tenant_id": "{{user `tenant_id`}}",
+      "subscription_id": "{{user `subscription_id`}}",
+
+      "managed_image_resource_group_name": "{{user `myResourceGroup`}}",
+      "managed_image_name": "{{user `myPackerImage`}}",
+
+      "os_type": "Linux",
+      "image_publisher": "Canonical",
+      "image_offer": "UbuntuServer",
+      "image_sku": "{{user `image_sku`}}",
+
+      "azure_tags": {
+          "dept": "Engineering",
+          "task": "Image deployment"
+      },
+
+      "location": "{{user `location`}}",
+      "vm_size": "{{user `vm_size`}}"
+    }
+  ],
+  "provisioners": [{
+    "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+    "inline": [
+      "apt-get update",
+      "apt-get upgrade -y",
+      "apt-get -y install wget gnupg2 curl software-properties-common",
+      "wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | apt-key add -",
+      "sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'",
+      "curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -",
+      "apt-add-repository 'deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main'",
+      "apt-add-repository --yes --update ppa:ansible/ansible",
+      "apt-get update",
+      "apt-get -y install jenkins vault terraform ansible docker",
+
+      "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"
+    ],
+    "inline_shebang": "/bin/sh -x",
+    "type": "shell"
+  }]
+}
