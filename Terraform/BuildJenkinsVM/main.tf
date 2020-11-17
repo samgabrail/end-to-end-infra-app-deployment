@@ -145,7 +145,7 @@ resource "azurerm_linux_virtual_machine" "jenkins" {
 
   admin_ssh_key {
     username   = "adminuser"
-    public_key = file("/home/sam/.ssh/id_rsa.pub")
+    public_key = file("id_rsa.pub")
   }
 
   // storage_image_reference {
