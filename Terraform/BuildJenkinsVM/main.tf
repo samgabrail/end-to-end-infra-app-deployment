@@ -129,7 +129,7 @@ resource "azurerm_public_ip" "jenkins-pip" {
   location            = var.location
   resource_group_name = data.azurerm_resource_group.myresourcegroup.name
   allocation_method   = "Dynamic"
-  domain_name_label   = "${var.prefix}-meow"
+  domain_name_label   = "${var.prefix}-jenkins"
 }
 
 resource "azurerm_linux_virtual_machine" "jenkins" {
@@ -165,3 +165,7 @@ resource "azurerm_linux_virtual_machine" "jenkins" {
 
 }
 
+data "azurerm_public_ip" "jenkins_public_ip" {
+  name                = azurerm_public_ip.jenkins-pip.name
+  resource_group_name = data.azurerm_resource_group.myresourcegroup.name
+}
