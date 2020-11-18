@@ -2,7 +2,7 @@
 FROM jenkins/jenkins:lts
 # if we want to install via apt
 USER root
-RUN apt-get update && apt-get install -y curl software-properties-common && apt-add-repository --yes --update ppa:ansible/ansible && apt-get update && apt-get -y install ansible
+RUN apt-get update && apt-get install -y pip
 RUN wget https://releases.hashicorp.com/vault/1.6.0/vault_1.6.0_linux_amd64.zip && unzip vault_1.6.0_linux_amd64.zip && mv vault /usr/local/bin && wget https://releases.hashicorp.com/terraform/0.13.5/terraform_0.13.5_linux_amd64.zip && unzip terraform_0.13.5_linux_amd64.zip && mv terraform /usr/local/bin
 # drop back to the regular jenkins user - good practice
 USER jenkins

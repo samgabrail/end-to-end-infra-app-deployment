@@ -39,7 +39,7 @@ data "azurerm_resource_group" "myresourcegroup" {
 }
 
 data "azurerm_image" "docker-image" {
-  name                = "Docker"
+  name                = "samg-Docker"
   resource_group_name = data.azurerm_resource_group.myresourcegroup.name
 }
 
