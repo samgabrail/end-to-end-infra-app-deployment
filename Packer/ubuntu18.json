@@ -30,17 +30,7 @@
     "inline": [
       "apt-get update",
       "apt-get upgrade -y",
-      "apt-get -y install wget gnupg2 curl software-properties-common",
-      "wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key > /tmp/jenkins",
-      "apt-key add /tmp/jenkins",
-      "sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list'",
-      "curl -fsSL https://apt.releases.hashicorp.com/gpg > /tmp/hashicorp",
-      "apt-key add /tmp/hashicorp",
-      "apt-add-repository 'deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main'",
-      "apt-add-repository --yes --update ppa:ansible/ansible",
-      "apt-get update",
       "snap install docker",
-      "apt-get -y install openjdk-8-jdk jenkins vault terraform ansible ",
 
       "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"
     ],

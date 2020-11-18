@@ -40,34 +40,3 @@ variable "vm_size" {
   description = "Specifies the size of the virtual machine."
   default     = "Standard_A0"
 }
-
-variable "image_publisher" {
-  description = "Name of the publisher of the image (az vm image list)"
-  default     = "Canonical"
-}
-
-variable "image_offer" {
-  description = "Name of the offer (az vm image list)"
-  default     = "UbuntuServer"
-}
-
-variable "image_sku" {
-  description = "Image SKU to apply (az vm image list)"
-  default     = "16.04-LTS"
-}
-
-variable "image_version" {
-  description = "Version of the image to apply (az vm image list)"
-  default     = "latest"
-}
-
-// variable "admin_username" {
-//   description = "Administrator user name for linux"
-//   default     = "hashicorp"
-// }
-
-// variable "admin_password" {
-//   description = "Administrator password for linux"
-//   default     = "Password123!"
-// }
-

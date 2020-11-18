@@ -34,18 +34,12 @@ locals {
   }
 }
 
-// resource "azurerm_resource_group" "myresourcegroup" {
-//   name     = "${var.prefix}-jenkins"
-//   location = var.location
-//   tags = local.common_tags
-// }
-
 data "azurerm_resource_group" "myresourcegroup" {
   name = "${var.prefix}-jenkins"
 }
 
-data "azurerm_image" "jenkins-image" {
-  name                = "Jenkins"
+data "azurerm_image" "docker-image" {
+  name                = "Docker"
   resource_group_name = data.azurerm_resource_group.myresourcegroup.name
 }
 
@@ -109,7 +103,6 @@ resource "azurerm_network_interface" "jenkins-nic" {
   name                      = "${var.prefix}-jenkins-nic"
   location                  = var.location
   resource_group_name       = data.azurerm_resource_group.myresourcegroup.name
-  // network_security_group_id = azurerm_network_security_group.jenkins-sg.id
 
   ip_configuration {
     name                          = "${var.prefix}-ipconfig"
@@ -148,14 +141,7 @@ resource "azurerm_linux_virtual_machine" "jenkins" {
     public_key = file("id_rsa.pub")
   }
 
-  // storage_image_reference {
-  //   publisher = var.image_publisher
-  //   offer     = var.image_offer
-  //   sku       = var.image_sku
-  //   version   = var.image_version
-  // }
-
-  source_image_id = data.azurerm_image.jenkins-image.id
+  source_image_id = data.azurerm_image.docker-image.id
 
   os_disk {
     name                  = "${var.prefix}-osdisk"
