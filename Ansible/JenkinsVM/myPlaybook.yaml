@@ -1,0 +1,22 @@
+---
+- hosts: all
+  become_user: root
+  become: true
+  tasks:
+    - name: Install Docker module for Python
+      pip:
+        name: docker
+    - name: Pull the Jenkins Docker image
+      docker_image:
+        name: "samgabrail/jenkins-tf-vault-ansible:latest"
+        source: pull
+    - name: Create Jenkins container
+      docker_container:
+        name: "jenkins"
+        image: "samgabrail/jenkins-tf-vault-ansible:latest"
+        state: started
+        ports:
+          - "8080:8080"
+          - "50000:50000"
+        volumes:
+          - jenkins_home:/var/jenkins_home

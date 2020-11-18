@@ -156,25 +156,25 @@ resource "azurerm_linux_virtual_machine" "jenkins" {
 }
 
 
-resource "null_resource" "run-jenkins-docker" {
-  depends_on = [
-    azurerm_linux_virtual_machine.jenkins
-  ]
+// resource "null_resource" "run-jenkins-docker" {
+//   depends_on = [
+//     azurerm_linux_virtual_machine.jenkins
+//   ]
 
-  triggers = {
-    build_number = timestamp()
-  }
+//   triggers = {
+//     build_number = timestamp()
+//   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo docker run -d -v jenkins_home:/var/jenkins_home -p 8080:8080 -p 50000:50000 samgabrail/jenkins-tf-vault-ansible:latest"
-    ]
+//   provisioner "remote-exec" {
+//     inline = [
+//       "sudo docker run -d -v jenkins_home:/var/jenkins_home -p 8080:8080 -p 50000:50000 samgabrail/jenkins-tf-vault-ansible:latest"
+//     ]
 
-    connection {
-      type     = "ssh"
-      user     = var.adminuser
-      private_key = file("/home/sam/.ssh/id_rsa")
-      host     = azurerm_public_ip.jenkins-pip.fqdn
-    }
-  }
-}
+//     connection {
+//       type     = "ssh"
+//       user     = var.adminuser
+//       private_key = file("/home/sam/.ssh/id_rsa")
+//       host     = azurerm_public_ip.jenkins-pip.fqdn
+//     }
+//   }
+// }
