@@ -164,9 +164,3 @@ resource "azurerm_linux_virtual_machine" "jenkins" {
   }
 
 }
-
-data "azurerm_public_ip" "jenkins_public_ip" {
-  name                = azurerm_public_ip.jenkins-pip.name
-  resource_group_name = data.azurerm_resource_group.myresourcegroup.name
-}
-
