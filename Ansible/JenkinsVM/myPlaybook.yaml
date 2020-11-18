@@ -9,7 +9,8 @@
     - name: Pull the Jenkins Docker image
       docker_image:
         name: "samgabrail/jenkins-tf-vault-ansible:latest"
-        source: pull
+        state: present
+        force: yes
     - name: Create Jenkins container
       docker_container:
         name: "jenkins"
