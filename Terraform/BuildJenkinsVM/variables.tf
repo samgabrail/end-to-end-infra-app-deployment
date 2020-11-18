@@ -40,3 +40,8 @@ variable "vm_size" {
   description = "Specifies the size of the virtual machine."
   default     = "Standard_A0"
 }
+
+variable "adminuser" {
+  description = "Specifies the size of the virtual machine."
+  default     = "adminuser"
+}

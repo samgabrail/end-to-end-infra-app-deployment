@@ -137,7 +137,7 @@ resource "azurerm_linux_virtual_machine" "jenkins" {
   network_interface_ids         = [azurerm_network_interface.jenkins-nic.id]
 
   admin_ssh_key {
-    username   = "adminuser"
+    username   = var.adminuser
     public_key = file("id_rsa.pub")
   }
 
@@ -172,7 +172,7 @@ resource "null_resource" "run-jenkins-docker" {
 
     connection {
       type     = "ssh"
-      user     = azurerm_linux_virtual_machine.jenkins.admin_ssh_key.username
+      user     = var.adminuser
       private_key = file("/home/sam/.ssh/id_rsa")
       host     = azurerm_public_ip.jenkins-pip.fqdn
     }
