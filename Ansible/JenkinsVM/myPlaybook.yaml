@@ -3,6 +3,9 @@
   become_user: root
   become: true
   tasks:
+    - name: Install pip3
+      apt:
+        name: python3-pip
     - name: Install Docker module for Python
       pip:
         name: docker
