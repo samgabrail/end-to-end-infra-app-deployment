@@ -7,6 +7,7 @@ terraform {
   }
 }
 
+
 provider "azurerm" {
   subscription_id = var.subscription_id
   client_id       = var.client_id
@@ -149,10 +150,6 @@ resource "azurerm_linux_virtual_machine" "jenkins" {
     caching               = "ReadWrite"
   }
   
-  // provisioner "local-exec" {
-  //   command = "sudo docker run -d -v jenkins_home:/var/jenkins_home -p 8080:8080 -p 50000:50000 samgabrail/jenkins-tf-vault-ansible:latest"
-  // }
-
 }
 
 
