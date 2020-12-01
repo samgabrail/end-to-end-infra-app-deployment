@@ -8,7 +8,7 @@ node() {
                          engineVersion: 2]
   timestamps {
     stage ('Create Wrapped Secret ID') {
-      withVault([configuration: configuration, vaultSecrets: secrets]) {
+      withVault([configuration: configuration]) {
         sh 'echo $configuration'
       
       def WRAPPED_SID = ""
