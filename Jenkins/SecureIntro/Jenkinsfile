@@ -2,6 +2,7 @@
 def VAULT_BIN = "/usr/local/bin/vault"
 def TERRAFORM_BIN = "/usr/local/bin/terraform"
 pipeline{
+  agent any
 node() {
   environment {
     VAULT_ADDR="http://vault.hashidemos.tekanaid.com:8200"
