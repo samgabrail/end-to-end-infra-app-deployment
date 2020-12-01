@@ -1,25 +1,24 @@
 #!/usr/bin/env groovy
 def VAULT_BIN = "/usr/local/bin/vault"
 def TERRAFORM_BIN = "/usr/local/bin/terraform"
-// def configuration = [vaultUrl: 'http://vault.hashidemos.tekanaid.com:8200/',
-//                          vaultCredentialId: 'Vault_root_token',
-//                          engineVersion: 2]
+
 node() {
-  timestamps {
-    stage ('Create Wrapped Secret ID') {
-      withCredentials([
+  withCredentials([
         [
             $class: 'VaultTokenCredentialBinding',
             credentialsId: 'Vault_root_token',
             vaultAddr: 'http://vault.hashidemos.tekanaid.com:8200'
         ]
     ]){
+  timestamps {
+    stage ('Create Wrapped Secret ID') {
+      
         def WRAPPED_SID = ""
         env.WRAPPED_SID = sh(
           returnStdout: true,
           script: "${VAULT_BIN} write -field=wrapping_token -wrap-ttl=200s -f auth/pipeline/role/pipeline-approle/secret-id"
         )
-      }
+      
     }
     stage ("Get Role ID for the pipeline AppRole") {
       def ROLE_ID = ""
@@ -57,5 +56,6 @@ node() {
       sh(returnStdout:true,
         script: "VAULT_TOKEN=${VAULT_TOKEN} ${VAULT_BIN} read azure/creds/jenkins")
     }
+  }
   }
 }
