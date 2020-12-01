@@ -1,6 +1,7 @@
 #!/usr/bin/env groovy
 def VAULT_BIN = "/usr/local/bin/vault"
 def TERRAFORM_BIN = "/usr/local/bin/terraform"
+agent any
 environment {
   VAULT_ADDR = "http://vault.hashidemos.tekanaid.com:8200"
 }
