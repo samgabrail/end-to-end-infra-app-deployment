@@ -1,7 +1,11 @@
 #!/usr/bin/env groovy
 def VAULT_BIN = "/usr/local/bin/vault"
+def TERRAFORM_BIN = "/usr/local/bin/terraform"
 
 node() {
+  environment {
+    VAULT_ADDR= "http://vault.hashidemos.tekanaid.com:8200"
+  }
   timestamps {
     stage ('Create Wrapped Secret ID') {
       def WRAPPED_SID = ""
@@ -39,8 +43,12 @@ node() {
       )
     }
     stage("Fetch my kv secrets") {
-      sh(returnStdout:false,
+      sh(returnStdout:true,
         script: "VAULT_TOKEN=${VAULT_TOKEN} ${VAULT_BIN} read kv/pipeline-secrets")
+    }
+    stage("Create Azure Creds") {
+      sh(returnStdout:true,
+        script: "VAULT_TOKEN=${VAULT_TOKEN} ${VAULT_BIN} read azure/creds/jenkins")
     }
   }
 }

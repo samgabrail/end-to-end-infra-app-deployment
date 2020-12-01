@@ -86,3 +86,13 @@ Here we can use the Vault generated creds to build a VM in Azure since the creds
 Below are some resources that talk about Secure Introduction and Secret Zero
 [HashiTalk on Vault Response Wrapping and Secret Zero](https://www.hashicorp.com/resources/vault-response-wrapping-makes-the-secret-zero-challenge-a-piece-of-cake)
 [GitHub Repo for above HashiTalk](https://github.com/misurellig/hashitalks-demo)
+
+#### Workflow
+
+1. A Vault Admin creates a webblog app role-id
+2. An admin creates a Packer VM image in Azure with the webblog app role-id
+3. A Vault Admin provides Jenkins with a token with permissions to only write a wrapped Secret ID (Jenkins is a Vault trusted entity)
+4. Jenkins creates a wrapped Secret ID and delivers it to the pipeline
+5. The Jenkins pipeline unwraps the Secret ID and uses it with the Role ID to login into Vault
+6. The pipeline then retrieves the Azure creds and passes them to Terraform
+7. Terraform 
