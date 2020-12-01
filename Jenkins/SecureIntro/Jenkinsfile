@@ -4,11 +4,9 @@ pipeline {
   environment {
     VAULT_ADDR = "http://vault.hashidemos.tekanaid.com:8200"
   }
-
-  def VAULT_BIN = "/usr/local/bin/vault"
-  def TERRAFORM_BIN = "/usr/local/bin/terraform"
-
-
+  stages{
+    def VAULT_BIN = "/usr/local/bin/vault"
+    def TERRAFORM_BIN = "/usr/local/bin/terraform"
     stage ('Create Wrapped Secret ID') {
       def WRAPPED_SID = ""
       env.WRAPPED_SID = sh(
@@ -52,4 +50,5 @@ pipeline {
       sh(returnStdout:true,
         script: "VAULT_TOKEN=${VAULT_TOKEN} ${VAULT_BIN} read azure/creds/jenkins")
     }
+  }
 }
