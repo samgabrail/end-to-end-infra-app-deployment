@@ -81,5 +81,8 @@ We use Terraform to build an Azure VM based on the Packer image we previously cr
 **Note**
 Here we can use the Vault generated creds to build a VM in Azure since the creds are tied to the `samg-jenkins` resource group.
 
-### Use an App Role
+### Secure Introduction
 
+Below are some resources that talk about Secure Introduction and Secret Zero
+[HashiTalk on Vault Response Wrapping and Secret Zero](https://www.hashicorp.com/resources/vault-response-wrapping-makes-the-secret-zero-challenge-a-piece-of-cake)
+[GitHub Repo for above HashiTalk](https://github.com/misurellig/hashitalks-demo)
