@@ -20,13 +20,13 @@ node() {
         )
       
     }
-    stage ("Get Role ID for the pipeline AppRole") {
-      def ROLE_ID = ""
-      env.ROLE_ID = sh(
-        returnStdout: true,
-        script: "${VAULT_BIN} read -field=role_id auth/pipeline/role/pipeline-approle/role-id"
-      )
-    }
+    // stage ("Get Role ID for the pipeline AppRole") {
+    //   def ROLE_ID = ""
+    //   env.ROLE_ID = sh(
+    //     returnStdout: true,
+    //     script: "${VAULT_BIN} read -field=role_id auth/pipeline/role/pipeline-approle/role-id"
+    //   )
+    // }
     stage("Unwrap Secret ID"){
       def UNWRAPPED_SID = ""
       env.UNWRAPPED_SID = sh(
