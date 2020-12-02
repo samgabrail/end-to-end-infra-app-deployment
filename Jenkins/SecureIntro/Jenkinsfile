@@ -59,6 +59,5 @@ node() {
         )
       sh 'echo ${AZURE_CREDS}'
     }
-  
   }
 }
