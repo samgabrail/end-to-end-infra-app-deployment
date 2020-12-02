@@ -30,7 +30,7 @@
     "inline": [
       "apt-get update",
       "apt-get upgrade -y",
-      "apt-get install python3-pip -y",
+      "apt-get install python3-pip jq -y",
       "snap install docker",
 
       "/usr/sbin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"

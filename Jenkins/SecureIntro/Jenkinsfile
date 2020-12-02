@@ -59,9 +59,9 @@ node() {
           def AZURE_CREDS = ""
           env.AZURE_CREDS = sh(
             returnStdout:true,
-            script: "${VAULT_BIN} read azure/creds/jenkins"
+            script: "${VAULT_BIN} read -format=json azure/creds/jenkins > /tmp/azure_creds.json"
             )
-          sh 'echo ${AZURE_CREDS}'
+          sh 'cat /tmp/azure_creds.json | jq .data.client_id && cat /tmp/azure_creds.json | jq .data.client_secret'
  
         }     
       

@@ -6,7 +6,7 @@ USER root
 RUN wget https://releases.hashicorp.com/vault/1.6.0/vault_1.6.0_linux_amd64.zip && unzip vault_1.6.0_linux_amd64.zip && mv vault /usr/local/bin && wget https://releases.hashicorp.com/terraform/0.13.5/terraform_0.13.5_linux_amd64.zip && unzip terraform_0.13.5_linux_amd64.zip && mv terraform /usr/local/bin && rm vault_1.6.0_linux_amd64.zip && rm terraform_0.13.5_linux_amd64.zip
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
-    apt-get install -y gnupg2 python3-pip sshpass git openssh-client && \
+    apt-get install -y gnupg2 python3-pip sshpass git openssh-client jq && \
     rm -rf /var/lib/apt/lists/* && \
     apt-get clean
     
