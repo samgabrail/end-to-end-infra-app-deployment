@@ -49,12 +49,20 @@ node() {
       )
     }
     stage("Fetch my kv secrets") {
-      sh(returnStdout:true,
-        script: "VAULT_TOKEN=${VAULT_TOKEN} ${VAULT_BIN} read kv/pipeline-secrets")
+      def KV_SECRET = ""
+      env.KV_SECRET = sh(
+        returnStdout:true,
+        script: "VAULT_TOKEN=${VAULT_TOKEN} ${VAULT_BIN} read kv/pipeline-secrets"
+        )
+      sh 'echo ${KV_SECRET}'
     }
     stage("Create Azure Creds") {
-      sh(returnStdout:true,
-        script: "VAULT_TOKEN=${VAULT_TOKEN} ${VAULT_BIN} read azure/creds/jenkins")
+      def AZURE_CREDS = ""
+      env.AZURE_CREDS = sh(
+        returnStdout:true,
+        script: "VAULT_TOKEN=${VAULT_TOKEN} ${VAULT_BIN} read azure/creds/jenkins"
+        )
+      sh 'echo ${AZURE_CREDS}'
     }
   }
   }
