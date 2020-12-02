@@ -39,8 +39,8 @@ node() {
       env.VAULT_LOGIN_TOKEN = sh(
         returnStdout: true,
         script: "${VAULT_BIN} write -field=token auth/pipeline/login role_id=${ROLE_ID} secret_id=${UNWRAPPED_SID}"
-        sh 'echo ${ROLE_ID} ${UNWRAPPED_SID}'
       )
+      sh 'echo ${ROLE_ID} ${UNWRAPPED_SID}'
     }
     stage("Login into Vault") {
       def VAULT_TOKEN = ""
