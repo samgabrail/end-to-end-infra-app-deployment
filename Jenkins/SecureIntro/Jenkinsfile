@@ -1,11 +1,12 @@
 #!/usr/bin/env groovy
 def VAULT_BIN = "/usr/local/bin/vault"
 def TERRAFORM_BIN = "/usr/local/bin/terraform"
-def ROLE_ID = "11f503c6-9c4f-d223-7845-64b177864ddf"
+def ROLE_ID = "11f503c6-9c4f-d223-7845-64b177864ddf" //this needs to be inserted manually by a Vault Admin
 def VAULT_ADDR = "http://vault.hashidemos.tekanaid.com:8200"
 env.VAULT_ADDR = VAULT_ADDR
 
 node() {
+  // Below are the Jenkins AppRole credentials provided by the Vault Admin. These are Jenkins wide credentials and are not to be confused with the Jenkins Pipeline AppRole credentials that are specific to this pipeline for this application
   withCredentials([
         [
             $class: 'VaultTokenCredentialBinding',
@@ -13,7 +14,7 @@ node() {
             vaultAddr: 'http://vault.hashidemos.tekanaid.com:8200'
         ]
     ]){
-      
+        // The Jenkins Node is only allowed to create the wrapped secret ID and with a wrap-ttl between 100s and 300s
         stage ('Create Wrapped Secret ID') {
           
             def WRAPPED_SID = ""
@@ -23,6 +24,7 @@ node() {
             )
           
         }
+        // the stage below doesn't work with the Vault Jenkins policy to write wrapped secrets only, an admin needs to manually provide the ROLE_ID as defined at the top of this file
         // stage ("Get Role ID for the pipeline AppRole") {
         //   def ROLE_ID = ""
         //   env.ROLE_ID = sh(
@@ -47,7 +49,7 @@ node() {
         }
     }
 
-        stage("Login into Vault") {
+        stage("Log in into Vault") {
           def VAULT_TOKEN = ""
           env.VAULT_TOKEN = sh(
             returnStdout: true,
@@ -58,6 +60,11 @@ node() {
         stage("Create Azure Creds") {
           sh(returnStdout:false, script: "${VAULT_BIN} read -format=json azure/creds/jenkins > /tmp/azure_creds.json")
           sh 'cat /tmp/azure_creds.json | jq .data.client_id && cat /tmp/azure_creds.json | jq .data.client_secret'
-        }     
+        }
+
+        stage("Terraform to Provision the 2 App VMs in Azure") {
+          sh(returnStdout:false, script: "${TERRAFORM_BIN} apply --auto-approve")
+          sh 'cat /tmp/azure_creds.json | jq .data.client_id && cat /tmp/azure_creds.json | jq .data.client_secret'
+        }  
       
 }
