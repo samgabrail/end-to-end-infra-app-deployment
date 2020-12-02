@@ -11,54 +11,55 @@ node() {
             vaultAddr: 'http://vault.hashidemos.tekanaid.com:8200'
         ]
     ]){
-  timestamps {
-    stage ('Create Wrapped Secret ID') {
       
-        def WRAPPED_SID = ""
-        env.WRAPPED_SID = sh(
-          returnStdout: true,
-          script: "${VAULT_BIN} write -field=wrapping_token -wrap-ttl=200s -f auth/pipeline/role/pipeline-approle/secret-id"
-        )
+        stage ('Create Wrapped Secret ID') {
+          
+            def WRAPPED_SID = ""
+            env.WRAPPED_SID = sh(
+              returnStdout: true,
+              script: "${VAULT_BIN} write -field=wrapping_token -wrap-ttl=200s -f auth/pipeline/role/pipeline-approle/secret-id"
+            )
+          
+        }
+        // stage ("Get Role ID for the pipeline AppRole") {
+        //   def ROLE_ID = ""
+        //   env.ROLE_ID = sh(
+        //     returnStdout: true,
+        //     script: "${VAULT_BIN} read -field=role_id auth/pipeline/role/pipeline-approle/role-id"
+        //   )
+        // }
+        stage("Unwrap Secret ID"){
+          def UNWRAPPED_SID = ""
+          env.UNWRAPPED_SID = sh(
+            returnStdout: true,
+            script: "${VAULT_BIN} unwrap -field=secret_id ${WRAPPED_SID}"
+          )
+        }
+        stage("Get login token with Role ID and unwrapped Secret ID"){
+          def VAULT_LOGIN_TOKEN = ""
+          env.VAULT_LOGIN_TOKEN = sh(
+            returnStdout: true,
+            script: "${VAULT_BIN} write -field=token auth/pipeline/login role_id=${ROLE_ID} secret_id=${UNWRAPPED_SID}"
+          )
+          sh 'echo role-id: ${ROLE_ID}, secret-id: ${UNWRAPPED_SID}, vault_token: ${VAULT_LOGIN_TOKEN}'
+        }
+    }
+        stage("Login into Vault") {
+          def VAULT_TOKEN = ""
+          env.VAULT_TOKEN = sh(
+            returnStdout: true,
+            script: "${VAULT_BIN} login -field=token ${VAULT_LOGIN_TOKEN}"
+          )
+        }
+        
+        stage("Create Azure Creds") {
+          def AZURE_CREDS = ""
+          env.AZURE_CREDS = sh(
+            returnStdout:true,
+            script: "${VAULT_BIN} read azure/creds/jenkins"
+            )
+          sh 'echo ${AZURE_CREDS}'
+ 
       
-    }
-    // stage ("Get Role ID for the pipeline AppRole") {
-    //   def ROLE_ID = ""
-    //   env.ROLE_ID = sh(
-    //     returnStdout: true,
-    //     script: "${VAULT_BIN} read -field=role_id auth/pipeline/role/pipeline-approle/role-id"
-    //   )
-    // }
-    stage("Unwrap Secret ID"){
-      def UNWRAPPED_SID = ""
-      env.UNWRAPPED_SID = sh(
-        returnStdout: true,
-        script: "${VAULT_BIN} unwrap -field=secret_id ${WRAPPED_SID}"
-      )
-    }
-    stage("Get login token with Role ID and unwrapped Secret ID"){
-      def VAULT_LOGIN_TOKEN = ""
-      env.VAULT_LOGIN_TOKEN = sh(
-        returnStdout: true,
-        script: "${VAULT_BIN} write -field=token auth/pipeline/login role_id=${ROLE_ID} secret_id=${UNWRAPPED_SID}"
-      )
-      sh 'echo role-id: ${ROLE_ID}, secret-id: ${UNWRAPPED_SID}, vault_token: ${VAULT_LOGIN_TOKEN}'
-    }
-    stage("Login into Vault") {
-      def VAULT_TOKEN = ""
-      env.VAULT_TOKEN = sh(
-        returnStdout: true,
-        script: "${VAULT_BIN} login -field=token ${VAULT_LOGIN_TOKEN}"
-      )
-    }
-    }
-    stage("Create Azure Creds") {
-      def AZURE_CREDS = ""
-      env.AZURE_CREDS = sh(
-        returnStdout:true,
-        script: "${VAULT_BIN} read azure/creds/jenkins"
-        )
-      sh 'echo ${AZURE_CREDS}'
-    }
-  }
-  
+      }
 }
