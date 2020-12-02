@@ -1,6 +1,7 @@
 #!/usr/bin/env groovy
 def VAULT_BIN = "/usr/local/bin/vault"
 def TERRAFORM_BIN = "/usr/local/bin/terraform"
+def ROLE_ID = "11f503c6-9c4f-d223-7845-64b177864ddf"
 
 node() {
   withCredentials([
