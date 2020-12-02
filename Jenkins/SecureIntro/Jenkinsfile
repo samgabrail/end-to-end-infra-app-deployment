@@ -44,6 +44,12 @@ node() {
           sh 'echo role-id: ${ROLE_ID}, secret-id: ${UNWRAPPED_SID}, vault_token: ${VAULT_LOGIN_TOKEN}'
         }
     }
+      withCredentials([
+        [
+            $class: 'VaultTokenCredentialBinding',
+            vaultAddr: 'http://vault.hashidemos.tekanaid.com:8200'
+        ]
+    ]){
         stage("Login into Vault") {
           def VAULT_TOKEN = ""
           env.VAULT_TOKEN = sh(
@@ -60,6 +66,6 @@ node() {
             )
           sh 'echo ${AZURE_CREDS}'
  
-      
+        }     
       }
 }
