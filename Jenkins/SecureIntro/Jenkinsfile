@@ -6,7 +6,7 @@ node() {
   withCredentials([
         [
             $class: 'VaultTokenCredentialBinding',
-            credentialsId: 'Vault_root_token',
+            credentialsId: 'Vault_AppRole_Jenkins',
             vaultAddr: 'http://vault.hashidemos.tekanaid.com:8200'
         ]
     ]){
@@ -26,7 +26,6 @@ node() {
         returnStdout: true,
         script: "${VAULT_BIN} read -field=role_id auth/pipeline/role/pipeline-approle/role-id"
       )
-      sh 'echo ${ROLE_ID}'
     }
     stage("Unwrap Secret ID"){
       def UNWRAPPED_SID = ""
@@ -41,7 +40,7 @@ node() {
         returnStdout: true,
         script: "${VAULT_BIN} write -field=token auth/pipeline/login role_id=${ROLE_ID} secret_id=${UNWRAPPED_SID}"
       )
-      sh 'echo ${ROLE_ID} ${UNWRAPPED_SID} ${VAULT_LOGIN_TOKEN}'
+      sh 'echo role-id: ${ROLE_ID}, secret-id: ${UNWRAPPED_SID}, vault_token: ${VAULT_LOGIN_TOKEN}'
     }
     stage("Login into Vault") {
       def VAULT_TOKEN = ""

@@ -96,3 +96,47 @@ Below are some resources that talk about Secure Introduction and Secret Zero
 5. The Jenkins pipeline unwraps the Secret ID and uses it with the Role ID to login into Vault
 6. The pipeline then retrieves the Azure creds and passes them to Terraform
 7. Terraform 
+
+#### Create an Approle for Jenkins
+
+This is done via Terraform using the following configuration:
+
+```shell
+resource "vault_policy" "jenkins_policy" {
+  name = "jenkins-policy"
+  policy = file("policies/jenkins_policy.hcl")
+}
+
+resource "vault_auth_backend" "jenkins_access" {
+  type = "approle"
+  path = "jenkins"
+}
+
+resource "vault_approle_auth_backend_role" "jenkins_approle" {
+  backend            = vault_auth_backend.jenkins_access.path
+  role_name          = "jenkins-approle"
+  secret_id_num_uses = "5"
+  secret_id_ttl      = "300"
+  token_ttl          = "1800"
+  token_policies     = ["default", "jenkins-policy"]
+}
+```
+
+The `jenkins_policy.hcl` file mentioned here contains the following policy:
+
+```shell
+path "auth/pipeline/role/pipeline-approle/secret-id" {
+  policy = "write"
+  min_wrapping_ttl   = "100s"
+  max_wrapping_ttl   = "300s"
+}
+```
+
+Once you configure Vault via Terraform, you can then run the two commands below to get the `role-id` and the `secret-id`. You can see more [instructions in the documentation.](https://www.vaultproject.io/docs/auth/approle)
+
+```shell
+vault read auth/jenkins/role/jenkins-approle/role-id
+vault read auth/jenkins/role/jenkins-approle/secret-id
+```
+
+You can now take the `role-id` and the `secret-id` and insert them into the Jenkins Vault plugin for authentication.
