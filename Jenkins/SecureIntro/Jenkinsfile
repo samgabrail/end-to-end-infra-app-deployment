@@ -50,6 +50,7 @@ node() {
         script: "${VAULT_BIN} login -field=token ${VAULT_LOGIN_TOKEN}"
       )
     }
+    }
     stage("Create Azure Creds") {
       def AZURE_CREDS = ""
       env.AZURE_CREDS = sh(
@@ -59,5 +60,5 @@ node() {
       sh 'echo ${AZURE_CREDS}'
     }
   }
-  }
+  
 }
