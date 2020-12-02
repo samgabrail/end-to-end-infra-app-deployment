@@ -2,6 +2,8 @@
 def VAULT_BIN = "/usr/local/bin/vault"
 def TERRAFORM_BIN = "/usr/local/bin/terraform"
 def ROLE_ID = "11f503c6-9c4f-d223-7845-64b177864ddf"
+def VAULT_ADDR = "http://vault.hashidemos.tekanaid.com:8200"
+env.VAULT_ADDR = VAULT_ADDR
 
 node() {
   withCredentials([
@@ -44,12 +46,7 @@ node() {
           sh 'echo role-id: ${ROLE_ID}, secret-id: ${UNWRAPPED_SID}, vault_token: ${VAULT_LOGIN_TOKEN}'
         }
     }
-      withCredentials([
-        [
-            $class: 'VaultTokenCredentialBinding',
-            vaultAddr: 'http://vault.hashidemos.tekanaid.com:8200'
-        ]
-    ]){
+
         stage("Login into Vault") {
           def VAULT_TOKEN = ""
           env.VAULT_TOKEN = sh(
@@ -67,5 +64,5 @@ node() {
           sh 'echo ${AZURE_CREDS}'
  
         }     
-      }
+      
 }
