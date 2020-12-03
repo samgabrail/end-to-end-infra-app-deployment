@@ -67,10 +67,12 @@ node() {
         }
 
         stage("Terraform to Provision the 2 App VMs in Azure") {
-          sh 'cd /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs'
-          sh 'pwd'
-          sh 'ls'
-          sh(returnStdout:false, script: "${TERRAFORM_BIN} apply --auto-approve")
+          sh '''
+              cd /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs
+              pwd
+              ls -lah
+              terraform apply --auto-approve
+          '''
         }  
       
 }
