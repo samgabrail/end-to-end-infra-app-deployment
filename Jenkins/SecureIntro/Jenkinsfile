@@ -67,6 +67,8 @@ node() {
         }
 
         stage("Terraform to Provision the 2 App VMs in Azure") {
+          sh 'cd Terraform/ProvisionAppVMs'
+          sh 'pwd'
           sh(returnStdout:false, script: "${TERRAFORM_BIN} apply --auto-approve")
         }  
       
