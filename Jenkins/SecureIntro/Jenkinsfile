@@ -69,7 +69,7 @@ node() {
 
         stage("Retrieve TFC token from Vault and create the .terraformrc file") {
           sh '''
-              echo credentials \"app.terraform.io\" {token = $(vault kv get -field=tfc_token internal/tfc)} > /var/jenkins_home/.terraformrc
+              echo credentials "app.terraform.io" {token = $(vault kv get -field=tfc_token internal/tfc)} > /var/jenkins_home/.terraformrc
           '''
         } 
 
