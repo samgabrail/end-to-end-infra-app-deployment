@@ -1,4 +1,4 @@
-# Create a Jenkins VM
+# Create the Webblog App VMs
 
 ## Retrieve Azure Creds from Vault
 Make sure you're logged into Vault
@@ -6,6 +6,8 @@ Make sure you're logged into Vault
 vault read azure/creds/jenkins
 ```
 
-Place creds into the Terraform variables in TFC
+Jenkins will retrieve the Azure creds from Vault and then use those in the command below:
 
-This VM will have Docker installed via Packer. Then Ansible will pull and start a Docker image containing jenkins, ansible, vault, and terraform.
+```shell
+terraform apply -var 'client_id=foo' -var 'client_secret=bar' --auto-approve
+```

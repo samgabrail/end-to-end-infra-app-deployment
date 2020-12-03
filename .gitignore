@@ -1,2 +1,6 @@
 Packer/preseed.cfg
 Packer/variables.json
+Vault/pidfile
+.terraform
+Terraform/ProvisionAppVMs/client_secret.auto.tfvars
+Terraform/ProvisionAppVMs/client_id.auto.tfvars

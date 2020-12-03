@@ -9,7 +9,7 @@ env.read_env()
 def initialize_vault_token():
     VAULT_URL = env('VAULT_URL')
 
-    with open("/secrets/vault_token") as f: 
+    with open("/tmp/vault_token") as f: 
         VAULT_TOKEN = f.readlines()
         VAULT_TOKEN = VAULT_TOKEN[0].strip('\n')
 

@@ -1,4 +1,10 @@
 terraform {
+  backend "remote" {
+    organization = "HashiCorp-Sam"
+    workspaces {
+      name = "end-to-end-infra-app-deployment-webblog-app-azure"
+      }
+    }
   required_providers {
     azurerm = {
       source = "hashicorp/azurerm"
@@ -34,33 +40,35 @@ locals {
   }
 }
 
-data "azurerm_resource_group" "myresourcegroup" {
-  name = "${var.prefix}-webblog-app"
+// Using the same resource group because our Vault Azure secrets is tied to this specific resource group
+
+data "azurerm_resource_group" "jenkinsresourcegroup" {
+  name = "${var.prefix}-jenkins"
 }
 
 data "azurerm_image" "docker-image" {
   name                = "samg-Docker"
-  resource_group_name = data.azurerm_resource_group.myresourcegroup.name
+  resource_group_name = data.azurerm_resource_group.jenkinsresourcegroup.name
 }
 
 resource "azurerm_virtual_network" "vnet" {
-  name                = "${var.prefix}-vnet"
-  location            = data.azurerm_resource_group.myresourcegroup.location
+  name                = "${var.prefix}-${var.app-prefix}-vnet"
+  location            = data.azurerm_resource_group.jenkinsresourcegroup.location
   address_space       = [var.address_space]
-  resource_group_name = data.azurerm_resource_group.myresourcegroup.name
+  resource_group_name = data.azurerm_resource_group.jenkinsresourcegroup.name
 }
 
 resource "azurerm_subnet" "subnet" {
-  name                 = "${var.prefix}-subnet"
+  name                 = "${var.prefix}-${var.app-prefix}-subnet"
   virtual_network_name = azurerm_virtual_network.vnet.name
-  resource_group_name  = data.azurerm_resource_group.myresourcegroup.name
+  resource_group_name  = data.azurerm_resource_group.jenkinsresourcegroup.name
   address_prefixes       = [var.subnet_prefix]
 }
 
-resource "azurerm_network_security_group" "jenkins-sg" {
-  name                = "${var.prefix}-sg"
+resource "azurerm_network_security_group" "webblog-sg" {
+  name                = "${var.prefix}-${var.app-prefix}-sg"
   location            = var.location
-  resource_group_name = data.azurerm_resource_group.myresourcegroup.name
+  resource_group_name = data.azurerm_resource_group.jenkinsresourcegroup.name
 
   security_rule {
     name                       = "HTTP"
@@ -99,42 +107,42 @@ resource "azurerm_network_security_group" "jenkins-sg" {
   }
 }
 
-resource "azurerm_network_interface" "jenkins-nic" {
-  name                      = "${var.prefix}-jenkins-nic"
+resource "azurerm_network_interface" "webblog-nic" {
+  name                      = "${var.prefix}-${var.app-prefix}-webblog-nic"
   location                  = var.location
-  resource_group_name       = data.azurerm_resource_group.myresourcegroup.name
+  resource_group_name       = data.azurerm_resource_group.jenkinsresourcegroup.name
 
   ip_configuration {
-    name                          = "${var.prefix}-ipconfig"
+    name                          = "${var.prefix}-${var.app-prefix}-ipconfig"
     subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.jenkins-pip.id
+    public_ip_address_id          = azurerm_public_ip.webblog-pip.id
   }
 }
 
-resource "azurerm_network_interface_security_group_association" "jenkins-sga" {
-  network_interface_id      = azurerm_network_interface.jenkins-nic.id
-  network_security_group_id = azurerm_network_security_group.jenkins-sg.id
+resource "azurerm_network_interface_security_group_association" "webblog-sga" {
+  network_interface_id      = azurerm_network_interface.webblog-nic.id
+  network_security_group_id = azurerm_network_security_group.webblog-sg.id
 }
 
-resource "azurerm_public_ip" "jenkins-pip" {
-  name                = "${var.prefix}-ip"
+resource "azurerm_public_ip" "webblog-pip" {
+  name                = "${var.prefix}-${var.app-prefix}-ip"
   location            = var.location
-  resource_group_name = data.azurerm_resource_group.myresourcegroup.name
+  resource_group_name = data.azurerm_resource_group.jenkinsresourcegroup.name
   allocation_method   = "Dynamic"
-  domain_name_label   = "${var.prefix}-jenkins"
+  domain_name_label   = "${var.prefix}-${var.app-prefix}"
 }
 
-resource "azurerm_linux_virtual_machine" "jenkins" {
-  name                = "${var.prefix}-jenkins"
+resource "azurerm_linux_virtual_machine" "webblog" {
+  name                = "${var.prefix}-${var.app-prefix}"
   location            = var.location
-  resource_group_name = data.azurerm_resource_group.myresourcegroup.name
+  resource_group_name = data.azurerm_resource_group.jenkinsresourcegroup.name
   size                = var.vm_size
   admin_username      = "adminuser"
 
   tags = local.common_tags
   
-  network_interface_ids         = [azurerm_network_interface.jenkins-nic.id]
+  network_interface_ids         = [azurerm_network_interface.webblog-nic.id]
 
   admin_ssh_key {
     username   = var.adminuser
@@ -144,33 +152,9 @@ resource "azurerm_linux_virtual_machine" "jenkins" {
   source_image_id = data.azurerm_image.docker-image.id
 
   os_disk {
-    name                  = "${var.prefix}-osdisk"
+    name                  = "${var.prefix}-${var.app-prefix}-osdisk"
     storage_account_type  = "Standard_LRS"
     caching               = "ReadWrite"
   }
   
 }
-
-
-// resource "null_resource" "run-jenkins-docker" {
-//   depends_on = [
-//     azurerm_linux_virtual_machine.jenkins
-//   ]
-
-//   triggers = {
-//     build_number = timestamp()
-//   }
-
-//   provisioner "remote-exec" {
-//     inline = [
-//       "sudo docker run -d -v jenkins_home:/var/jenkins_home -p 8080:8080 -p 50000:50000 samgabrail/jenkins-tf-vault-ansible:latest"
-//     ]
-
-//     connection {
-//       type     = "ssh"
-//       user     = var.adminuser
-//       private_key = file("/home/sam/.ssh/id_rsa")
-//       host     = azurerm_public_ip.jenkins-pip.fqdn
-//     }
-//   }
-// }

@@ -1,4 +1,4 @@
 # Outputs file
-output "jenkins_public_dns" {
-  value = azurerm_public_ip.jenkins-pip.fqdn
+output "webblog_public_dns" {
+  value = azurerm_public_ip.webblog-pip.fqdn
 }

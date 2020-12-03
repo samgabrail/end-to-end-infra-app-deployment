@@ -268,3 +268,29 @@ vault agent -config=vault_agent_config.hcl
 
 **Note:** The token that the Vault agent generates is a token that has access to the policy defined in the role used for the Vault agent. So this generated token has the necessary Vault privileges that our Webblog app needs.
 
+
+## Create the Webblog App VMs
+
+### Jenkins to Retrieve Azure Creds from Vault
+
+```shell
+vault read azure/creds/jenkins
+```
+
+Jenkins will retrieve the Azure creds from Vault and then use those in the command below:
+
+```shell
+vault read -format=json azure/creds/jenkins > /tmp/azure_creds.json
+cat /tmp/azure_creds.json | jq .data.client_id && cat /tmp/azure_creds.json | jq .data.client_secret
+echo client_id=$(cat /tmp/azure_creds.json | jq .data.client_id) > client_id.auto.tfvars
+echo client_secret=$(cat /tmp/azure_creds.json | jq .data.client_secret) > client_secret.auto.tfvars
+```
+
+```shell
+terraform apply --auto-approve
+```
+
+
+
+
+vault write auth/approle/login role_id=16c5d9de-6ec7-8885-43f2-d36b15da7985 secret_id=f1c94c75-73be-3e1f-5628-19eb1d66daeb

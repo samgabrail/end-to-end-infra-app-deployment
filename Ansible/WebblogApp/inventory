@@ -1,0 +1,9 @@
+[all:children]
+jenkins
+
+[all:vars]
+ansible_user=adminuser
+ansible_python_interpreter=/usr/bin/python3
+
+[jenkins]
+jenkinsvm ansible_host=samg-jenkins.centralus.cloudapp.azure.com
