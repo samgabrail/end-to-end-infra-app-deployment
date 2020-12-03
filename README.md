@@ -136,7 +136,7 @@ Once you configure Vault via Terraform, you can then run the two commands below 
 
 ```shell
 vault read auth/jenkins/role/jenkins-approle/role-id
-vault read auth/jenkins/role/jenkins-approle/secret-id
+vault write -field=secret_id -f auth/jenkins/role/jenkins-approle/secret-id
 ```
 
 You can now take the `role-id` and the `secret-id` and insert them into the Jenkins Vault plugin for authentication.
@@ -166,8 +166,105 @@ resource "vault_approle_auth_backend_role" "pipeline_approle" {
 }
 ```
 
+The `jenkins_pipeline_policy.hcl` file mentioned here contains a policy to allow the pipeline to retrieve Azure credentials so that Terraform can provision Azure VMs. Here is the policy configuration:
+
+```shell
+path "azure/*" {
+  capabilities = [ "read" ]
+}
+```
+
+
 You then need to read the role-id for the Jenkins policy and insert that into the jenkinsfile for the pipeline. The Jenkins node will create a wrapped secret ID for the pipeline and in fact, that's the only capability it has as defined in the Jenkins policy mentioned above. The pipeline then unwraps the secret-id and retrieves a VAULT_TOKEN that will get used for the remainder of the pipeline. Below is the command used to generate the role-id for the pipeline.
 
 ```shell
 vault read auth/pipeline/role/pipeline-approle/role-id
 ```
+
+#### Create an Approle for the Vault Agent
+
+Below is the Terraform configuration for Vault:
+
+```shell
+resource "vault_policy" "webblog" {
+  name   = "webblog"
+  policy = file("policies/webblog_policy.hcl")
+}
+
+resource "vault_auth_backend" "apps_access" {
+  type = "approle"
+  path = "approle"
+}
+
+resource "vault_approle_auth_backend_role" "webblog_approle" {
+  backend            = vault_auth_backend.apps_access.path
+  role_name          = "webblog-approle"
+  secret_id_num_uses = "1"
+  secret_id_ttl      = "600"
+  token_ttl          = "1800"
+  token_policies     = ["default", "webblog"]
+}
+```
+
+The `webblog_policy.hcl` file mentioned here contains a policy to allow Vault agent to create a token for the webblog app to use. The policy allows the webblog app to read dynamic MongoDB secrets as well as utilize the Vault Transit secrets engine to encrypt the content of the blog posts. Here is the policy configuration:
+
+```shell
+path "internal/data/webblog/mongodb" {
+  capabilities = ["read"]
+}
+path "mongodb/creds/mongodb-role" {
+  capabilities = [ "read" ]
+}
+path "mongodb_nomad/creds/mongodb-nomad-role" {
+  capabilities = [ "read" ]
+}
+path "transit/*" {
+  capabilities = ["list","read","update"]
+}
+```
+
+The pipeline will need to run the following commands to create a `role-id` and a `wrapped-secret-id` for the Vault agent:
+
+```shell
+vault read -field=role_id auth/approle/role/webblog-approle/role-id > /tmp/webblog_role_id
+vault write -field=wrapping_token -wrap-ttl=200s -f auth/approle/role/webblog-approle/secret-id > /tmp/webblog_wrapped_secret_id
+```
+
+#### Run the Vault Agent
+
+Below is the Vault agent configuration:
+
+```shell
+pid_file = "./pidfile"
+
+vault {
+  address = "http://vault.hashidemos.tekanaid.com:8200"
+}
+
+auto_auth {
+  method "approle" {
+    mount_path = "auth/approle"
+      config = {
+        role_id_file_path = "/tmp/webblog_role_id"
+        secret_id_file_path = "/tmp/webblog_wrapped_secret_id"
+        remove_secret_id_file_after_reading = true
+        secret_id_response_wrapping_path = "auth/approle/role/webblog-approle/secret-id"
+    }
+  }
+
+  sink "file" {
+    config = {
+      path = "/tmp/vault_token"
+      }
+    }
+}
+```
+
+Then you can run the Vault agent using the command below:
+
+```shell
+vault agent -config=vault_agent_config.hcl
+```
+
+**Note:** The token that the Vault agent generates is a token that has access to the policy defined in the role used for the Vault agent. So this generated token has the necessary Vault privileges that our Webblog app needs.
+

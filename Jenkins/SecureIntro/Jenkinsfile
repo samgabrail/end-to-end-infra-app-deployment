@@ -24,6 +24,7 @@ node() {
             )
           
         }
+      }
         // the stage below doesn't work with the Vault Jenkins policy to write wrapped secrets only, an admin needs to manually provide the ROLE_ID as defined at the top of this file
         // stage ("Get Role ID for the pipeline AppRole") {
         //   def ROLE_ID = ""
@@ -47,7 +48,7 @@ node() {
           )
           sh 'echo role-id: ${ROLE_ID}, secret-id: ${UNWRAPPED_SID}, vault_token: ${VAULT_LOGIN_TOKEN}'
         }
-    }
+    
 
         stage("Log in into Vault") {
           def VAULT_TOKEN = ""
