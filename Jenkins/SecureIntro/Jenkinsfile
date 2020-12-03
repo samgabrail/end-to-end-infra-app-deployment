@@ -60,19 +60,39 @@ node() {
         
         stage("Create Azure Creds") {
           sh(returnStdout:false, script: "${VAULT_BIN} read -format=json azure/creds/jenkins > /tmp/azure_creds.json")
-          sh 'pwd'
-          sh 'cat /tmp/azure_creds.json | jq .data.client_id && cat /tmp/azure_creds.json | jq .data.client_secret'
-          sh 'echo client_id=$(cat /tmp/azure_creds.json | jq .data.client_id) > /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs/client_id.auto.tfvars'
-          sh 'echo client_secret=$(cat /tmp/azure_creds.json | jq .data.client_secret) > /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs/client_secret.auto.tfvars'
+          sh '''
+          cat /tmp/azure_creds.json | jq .data.client_id && cat /tmp/azure_creds.json | jq .data.client_secret
+          echo client_id=$(cat /tmp/azure_creds.json | jq .data.client_id) > /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs/client_id.auto.tfvars
+          echo client_secret=$(cat /tmp/azure_creds.json | jq .data.client_secret) > /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs/client_secret.auto.tfvars
+          '''
         }
+
+        stage("Retrieve TFC token from Vault and create the .terraformrc file") {
+          sh '''
+              echo credentials \"app.terraform.io\" {token = $(vault kv get -field=tfc_token internal/tfc)} > /var/jenkins_home/.terraformrc
+          '''
+        } 
 
         stage("Terraform to Provision the 2 App VMs in Azure") {
           sh '''
               cd /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs
-              pwd
-              ls -lah
+              terraform init
               terraform apply --auto-approve
           '''
         }  
+
+        stage("Create Role-id and Wrapped Secret-id for the Vault Agent") {
+          sh '''
+              vault read -field=role_id auth/approle/role/webblog-approle/role-id > /tmp/app_role_id
+              vault write -field=wrapping_token -wrap-ttl=200s -f auth/approle/role/webblog-approle/secret-id > /tmp/app_wrap_secret_id
+          '''
+        }
+
+        stage("Ansible to Configure Webblog App VM") {
+          // We will need to install Vault to use the Vault agent
+          sh '''
+              cd /var/jenkins_home/workspace/Webblog_App@script/Ansible/WebblogApp
+          '''
+        } 
       
 }
