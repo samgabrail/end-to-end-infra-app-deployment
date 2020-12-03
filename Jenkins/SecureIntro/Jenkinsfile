@@ -60,6 +60,7 @@ node() {
         
         stage("Create Azure Creds") {
           sh(returnStdout:false, script: "${VAULT_BIN} read -format=json azure/creds/jenkins > /tmp/azure_creds.json")
+          sh 'pwd'
           sh 'cat /tmp/azure_creds.json | jq .data.client_id && cat /tmp/azure_creds.json | jq .data.client_secret'
           sh 'echo client_id=$(cat /tmp/azure_creds.json | jq .data.client_id) > client_id.auto.tfvars'
           sh 'echo client_secret=$(cat /tmp/azure_creds.json | jq .data.client_secret) > client_secret.auto.tfvars'

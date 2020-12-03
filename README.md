@@ -294,3 +294,6 @@ terraform apply --auto-approve
 
 
 vault write auth/approle/login role_id=16c5d9de-6ec7-8885-43f2-d36b15da7985 secret_id=f1c94c75-73be-3e1f-5628-19eb1d66daeb
+
+vault read -field=role_id auth/approle/role/webblog-approle/role-id
+vault write -field=wrapping_token -wrap-ttl=200s -f auth/approle/role/webblog-approle/secret-id 
