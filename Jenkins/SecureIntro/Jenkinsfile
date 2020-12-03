@@ -62,12 +62,12 @@ node() {
           sh(returnStdout:false, script: "${VAULT_BIN} read -format=json azure/creds/jenkins > /tmp/azure_creds.json")
           sh 'pwd'
           sh 'cat /tmp/azure_creds.json | jq .data.client_id && cat /tmp/azure_creds.json | jq .data.client_secret'
-          sh 'echo client_id=$(cat /tmp/azure_creds.json | jq .data.client_id) > client_id.auto.tfvars'
-          sh 'echo client_secret=$(cat /tmp/azure_creds.json | jq .data.client_secret) > client_secret.auto.tfvars'
+          sh 'echo client_id=$(cat /tmp/azure_creds.json | jq .data.client_id) > /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs/client_id.auto.tfvars'
+          sh 'echo client_secret=$(cat /tmp/azure_creds.json | jq .data.client_secret) > /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs/client_secret.auto.tfvars'
         }
 
         stage("Terraform to Provision the 2 App VMs in Azure") {
-          sh 'cd Terraform/ProvisionAppVMs'
+          sh '/var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs'
           sh 'pwd'
           sh(returnStdout:false, script: "${TERRAFORM_BIN} apply --auto-approve")
         }  
