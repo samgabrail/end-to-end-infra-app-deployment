@@ -1,6 +1,4 @@
 #!/usr/bin/env groovy
-def VAULT_BIN = "/usr/local/bin/vault"
-def TERRAFORM_BIN = "/usr/local/bin/terraform"
 def ROLE_ID = "11f503c6-9c4f-d223-7845-64b177864ddf" //this needs to be inserted manually by a Vault Admin
 def VAULT_ADDR = "http://vault.hashidemos.tekanaid.com:8200"
 env.VAULT_ADDR = VAULT_ADDR
@@ -21,7 +19,7 @@ node() {
             def WRAPPED_SID = ""
             env.WRAPPED_SID = sh(
               returnStdout: true,
-              script: "${VAULT_BIN} write -field=wrapping_token -wrap-ttl=200s -f auth/pipeline/role/pipeline-approle/secret-id"
+              script: "vault write -field=wrapping_token -wrap-ttl=200s -f auth/pipeline/role/pipeline-approle/secret-id"
             )
           
         }
@@ -30,14 +28,14 @@ node() {
         //   def ROLE_ID = ""
         //   env.ROLE_ID = sh(
         //     returnStdout: true,
-        //     script: "${VAULT_BIN} read -field=role_id auth/pipeline/role/pipeline-approle/role-id"
+        //     script: "vault read -field=role_id auth/pipeline/role/pipeline-approle/role-id"
         //   )
         // }
         stage("Jenkins Node Unwraps Secret ID"){
           def UNWRAPPED_SID = ""
           env.UNWRAPPED_SID = sh(
             returnStdout: true,
-            script: "${VAULT_BIN} unwrap -field=secret_id ${WRAPPED_SID}"
+            script: "vault unwrap -field=secret_id ${WRAPPED_SID}"
           )
         }
       }
@@ -45,7 +43,7 @@ node() {
           def VAULT_LOGIN_TOKEN = ""
           env.VAULT_LOGIN_TOKEN = sh(
             returnStdout: true,
-            script: "${VAULT_BIN} write -field=token auth/pipeline/login role_id=${ROLE_ID} secret_id=${UNWRAPPED_SID}"
+            script: "vault write -field=token auth/pipeline/login role_id=${ROLE_ID} secret_id=${UNWRAPPED_SID}"
           )
           sh 'echo role-id: ${ROLE_ID}, secret-id: ${UNWRAPPED_SID}, vault_token: ${VAULT_LOGIN_TOKEN}'
         }
@@ -54,12 +52,12 @@ node() {
           def VAULT_TOKEN = ""
           env.VAULT_TOKEN = sh(
             returnStdout: true,
-            script: "${VAULT_BIN} login -field=token ${VAULT_LOGIN_TOKEN}"
+            script: "vault login -field=token ${VAULT_LOGIN_TOKEN}"
           )
         }
         
         stage("Create Azure Creds for Terraform to Provision App VMs") {
-          sh(returnStdout:false, script: "${VAULT_BIN} read -format=json azure/creds/jenkins > /tmp/azure_creds.json")
+          sh(returnStdout:false, script: "vault read -format=json azure/creds/jenkins > /tmp/azure_creds.json")
           sh '''
           cat /tmp/azure_creds.json | jq .data.client_id && cat /tmp/azure_creds.json | jq .data.client_secret
           echo client_id=$(cat /tmp/azure_creds.json | jq .data.client_id) > /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs/client_id.auto.tfvars
@@ -92,7 +90,7 @@ node() {
               vault write -field=wrapping_token -wrap-ttl=200s -f auth/approle/role/webblog-approle/secret-id > /tmp/app_wrap_secret_id
           '''
         }
-        
+
         stage("Ansible to Configure Webblog App VM") {
           // We will need to install Vault to use the Vault agent and Consul for service mesh
           // Grab MongoDB Root Credentials from Vault and pass it to Ansible to create the MongoDB Container

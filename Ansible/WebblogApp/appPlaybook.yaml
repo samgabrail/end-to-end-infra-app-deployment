@@ -63,5 +63,10 @@
     - name: Install Webblog Python Dependencies
       pip:
         requirements: /home/adminuser/app/requirements.txt
-    - name: Run the Webblog App
-      script: /home/adminuser/app/app.py
+    - name: Copy Webblog App service to server
+      copy: src=webblog.service dest=/etc/systemd/system/webblog.service
+    - name: Start Webblog App service
+      systemd:
+        state: started
+        name: webblog
+        daemon_reload: yes
