@@ -79,11 +79,10 @@ node() {
 
         stage("Terraform to Provision the 2 App VMs in Azure") {
           sh '''
-              pushd /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs
+              cd /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs
               pwd
               terraform init
               terraform plan
-              popd
           '''
         }  
 
