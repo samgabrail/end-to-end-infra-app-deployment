@@ -6,5 +6,5 @@ This folder is used to run an ansible playbook from withing a Jenkins pipeline. 
 
 Make sure you're in the ansible folder when running the command:
 ```shell
-ansible-playbook -i inventory appPlaybook.yaml
+ansible-playbook -i inventory --extra-vars "mongo_root_user=1.23.45 mongo_root_password=foo" appPlaybook.yaml
 ```

@@ -50,7 +50,6 @@ node() {
           sh 'echo role-id: ${ROLE_ID}, secret-id: ${UNWRAPPED_SID}, vault_token: ${VAULT_LOGIN_TOKEN}'
         }
     
-
         stage("Log in into Vault") {
           def VAULT_TOKEN = ""
           env.VAULT_TOKEN = sh(
@@ -96,8 +95,10 @@ node() {
 
         stage("Ansible to Configure Webblog App VM") {
           // We will need to install Vault to use the Vault agent and Consul for service mesh
+          // Grab MongoDB Root Credentials from Vault and pass it to Ansible to create the MongoDB Container
           sh '''
               cd /var/jenkins_home/workspace/Webblog_App@script/Ansible/WebblogApp
+              ansible-playbook -i inventory --extra-vars "mongo_root_user=$(vault kv get -field=username internal/data/webblog/mongodb) mongo_root_password=$(vault kv get -field=password internal/data/webblog/mongodb)" appPlaybook.yaml
           '''
         } 
   }          
