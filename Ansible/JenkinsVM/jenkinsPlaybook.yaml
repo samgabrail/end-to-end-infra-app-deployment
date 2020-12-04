@@ -24,4 +24,11 @@
           - "8080:8080"
           - "50000:50000"
         volumes:
-          - jenkins_home:/var/jenkins_home
+          - /home/adminuser/jenkins_data:/var/jenkins_home
+    - name: Copy the Private SSH Key for Jenkins to Access Azure VMs
+      copy:
+        src: /mnt/c/Users/Sam/.ssh/id_rsa
+        dest: /home/adminuser/jenkins_data/.ssh
+        owner: adminuser
+        group: adminuser
+        mode: 0400
