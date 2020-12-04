@@ -4,6 +4,7 @@ webblog
 [all:vars]
 ansible_user=adminuser
 ansible_python_interpreter=/usr/bin/python3
+vault_version=1.6.0
 
 [webblog]
 webblog-app-vm ansible_host=samg-webblog-01.centralus.cloudapp.azure.com

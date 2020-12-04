@@ -1,30 +1,28 @@
 ---
-# - hosts: webblog-app-vm
-#   become_user: root
-#   become: true
-#   tasks:
-#     - name: Install pip3
-#       apt:
-#         name: python3-pip
-#     - name: Install Docker module for Python
-#       pip:
-#         name: docker
-#     - name: Pull the Jenkins Docker image
-#       docker_image:
-#         name: "samgabrail/jenkins-tf-vault-ansible:latest"
-#         source: pull
-#         state: present
-#         force_source: yes
-#     - name: Create Jenkins container
-#       docker_container:
-#         name: "jenkins"
-#         image: "samgabrail/jenkins-tf-vault-ansible:latest"
-#         state: started
-#         ports:
-#           - "8080:8080"
-#           - "50000:50000"
-#         volumes:
-#           - jenkins_home:/var/jenkins_home
+- hosts: webblog-app-vm
+  become_user: root
+  become: true
+  tasks:
+    - name: Install unzip
+      package:
+        name: unzip
+        update_cache: yes
+    - name: Download and install vault binary
+      unarchive:
+        src: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip"
+        dest: /usr/local/bin/
+        remote_src: True
+    - name: Create vault config directory
+      file: state=directory path=/etc/opt/vault/
+    - name: Copy vault config to server
+      copy: src=vault_agent_config.hcl dest=/etc/opt/vault/
+    - name: Copy role_id for Vault Agent
+      copy: src=/tmp/app_role_id dest=/tmp/webblog_role_id
+    - name: Copy wrapped_secret_id for Vault Agent
+      copy: src=/tmp/app_wrap_secret_id dest=/tmp/webblog_wrapped_secret_id
+    - name: Run the Vault Agent
+      shell:
+        cmd: vault agent -config=/etc/opt/vault/vault_agent_config.hcl
 
 - hosts: webblog-db-vm
   become_user: root
