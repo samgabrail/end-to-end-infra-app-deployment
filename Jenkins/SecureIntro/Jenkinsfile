@@ -75,6 +75,7 @@ node() {
           credentials "app.terraform.io" {
               token = "$(vault kv get -field=tfc_token internal/tfc)"
           }
+          
           EOF
           '''.stripIndent()
 
