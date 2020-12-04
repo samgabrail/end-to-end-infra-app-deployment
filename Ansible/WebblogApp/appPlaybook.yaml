@@ -49,9 +49,13 @@
       copy: src=/tmp/app_role_id dest=/tmp/webblog_role_id
     - name: Copy wrapped_secret_id for Vault Agent
       copy: src=/tmp/app_wrap_secret_id dest=/tmp/webblog_wrapped_secret_id
-    - name: Run the Vault Agent
-      shell:
-        cmd: vault agent -config=/etc/opt/vault/vault_agent_config.hcl
+    - name: Copy vault service to server
+      copy: src=vault.service dest=/usr/lib/systemd/system/vault.service
+    - name: Start vault service
+      systemd:
+        state: started
+        name: vault
+        daemon_reload: yes
     - name: Copy Webblog App
       copy: src=../../Application/app dest=/home/adminuser/
     - name: Install Webblog Python Dependencies

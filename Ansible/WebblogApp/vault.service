@@ -1,0 +1,8 @@
+[Unit]
+Description=HashiCorp Vault Agent Service
+
+[Service]
+ExecStart=/usr/local/bin/vault agent -config=/etc/opt/vault/vault_agent_config.hcl
+
+[Install]
+WantedBy=multi-user.target
