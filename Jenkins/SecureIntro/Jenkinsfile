@@ -50,7 +50,7 @@ node() {
           sh 'echo role-id: ${ROLE_ID}, secret-id: ${UNWRAPPED_SID}, vault_token: ${VAULT_LOGIN_TOKEN}'
         }
     
-        stage("Log into Vault") {
+        stage("Log into Vault with Pipeline AppRole") {
           def VAULT_TOKEN = ""
           env.VAULT_TOKEN = sh(
             returnStdout: true,
@@ -77,14 +77,6 @@ node() {
           '''.stripIndent()
         } 
 
-        stage("Create Role-id and Wrapped Secret-id for the Vault Agent on App VM") {
-          // Ansible to send the Role-id and the Wrapped Secret-id
-          sh '''
-              vault read -field=role_id auth/approle/role/webblog-approle/role-id > /tmp/app_role_id
-              vault write -field=wrapping_token -wrap-ttl=200s -f auth/approle/role/webblog-approle/secret-id > /tmp/app_wrap_secret_id
-          '''
-        }
-
         stage("Terraform to Provision the 2 App VMs in Azure") {
           sh '''
               cd /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs
@@ -93,6 +85,14 @@ node() {
           '''
         }  
 
+        stage("Create Role-id and Wrapped Secret-id for the Vault Agent on App VM") {
+          // Ansible to send the Role-id and the Wrapped Secret-id
+          sh '''
+              vault read -field=role_id auth/approle/role/webblog-approle/role-id > /tmp/app_role_id
+              vault write -field=wrapping_token -wrap-ttl=200s -f auth/approle/role/webblog-approle/secret-id > /tmp/app_wrap_secret_id
+          '''
+        }
+        
         stage("Ansible to Configure Webblog App VM") {
           // We will need to install Vault to use the Vault agent and Consul for service mesh
           // Grab MongoDB Root Credentials from Vault and pass it to Ansible to create the MongoDB Container

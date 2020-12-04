@@ -50,7 +50,7 @@
     - name: Copy wrapped_secret_id for Vault Agent
       copy: src=/tmp/app_wrap_secret_id dest=/tmp/webblog_wrapped_secret_id
     - name: Copy vault service to server
-      copy: src=vault.service dest=/usr/lib/systemd/system/vault.service
+      copy: src=vault.service dest=/etc/systemd/system/vault.service
     - name: Start vault service
       systemd:
         state: started
