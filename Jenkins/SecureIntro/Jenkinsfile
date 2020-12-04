@@ -68,8 +68,6 @@ node() {
         }
 
         stage("Retrieve TFC token from Vault and create the .terraformrc file") {
-          // need to figure out what to do with the quotes missing below for app.terraform.io 
-
           sh '''
           cat <<EOF > /var/jenkins_home/.terraformrc
           credentials "app.terraform.io" {
@@ -77,16 +75,15 @@ node() {
           }
           EOF
           '''.stripIndent()
-
-          
-          sh 'cat /var/jenkins_home/.terraformrc'
         } 
 
         stage("Terraform to Provision the 2 App VMs in Azure") {
           sh '''
-              cd /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs
+              pushd /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs
+              pwd
               terraform init
-              terraform apply --auto-approve
+              terraform plan
+              popd
           '''
         }  
 
