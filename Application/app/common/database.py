@@ -25,7 +25,7 @@ class Database(object):
 
     @staticmethod
     def getDynamicSecret_API(vault_token):
-        response = requests.get(f'{Database.VAULT_URL}/v1/mongodb_nomad/creds/mongodb-nomad-role',
+        response = requests.get(f'{Database.VAULT_URL}/v1/mongodb_azure/creds/mongodb-azure-role',
         params={'q': 'requests+language:python'},
         headers={'X-Vault-Token': vault_token},
         )

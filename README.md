@@ -218,6 +218,9 @@ path "mongodb/creds/mongodb-role" {
 path "mongodb_nomad/creds/mongodb-nomad-role" {
   capabilities = [ "read" ]
 }
+path "mongodb_azure/creds/mongodb-azure-role" {
+  capabilities = [ "read" ]
+}
 path "transit/*" {
   capabilities = ["list","read","update"]
 }
