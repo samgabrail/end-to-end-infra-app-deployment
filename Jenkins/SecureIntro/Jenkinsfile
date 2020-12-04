@@ -6,6 +6,7 @@ def VAULT_ADDR = "http://vault.hashidemos.tekanaid.com:8200"
 env.VAULT_ADDR = VAULT_ADDR
 
 node() {
+  timestamps{
   // Below are the Jenkins AppRole credentials provided by the Vault Admin. These are Jenkins wide credentials and are not to be confused with the Jenkins Pipeline AppRole credentials that are specific to this pipeline for this application
   withCredentials([
         [
@@ -82,7 +83,7 @@ node() {
               cd /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs
               pwd
               terraform init
-              terraform plan
+              terraform apply --auto-approve
           '''
         }  
 
@@ -100,5 +101,5 @@ node() {
               cd /var/jenkins_home/workspace/Webblog_App@script/Ansible/WebblogApp
           '''
         } 
-      
+  }          
 }
