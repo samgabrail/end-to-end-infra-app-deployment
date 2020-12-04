@@ -11,7 +11,7 @@ Here we trace the workflow of a developer deploying infrastructure and applicati
 6. Vault App Role
 7. Vault Dynamic Database Secrets for MongoDB
 8. Vault Transit Secrets Engine
-9.  Advanced CI/CD Pipeline Workflow using GitHub(VCS), Jenkins(CI/CD), Terraform(IaC), Ansible(Config Mgmt), Vault(Secrets Mgmt)
+9. Advanced CI/CD Pipeline Workflow using GitHub(VCS), Jenkins(CI/CD), Terraform(IaC), Ansible(Config Mgmt), Vault(Secrets Mgmt)
 10. Consul Service Mesh
 
 ## Vault Azure Secrets Engine

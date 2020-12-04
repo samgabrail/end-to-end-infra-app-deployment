@@ -6,5 +6,5 @@ This folder is used to run an ansible playbook that will start the Jenkins Docke
 
 Make sure you're in the ansible folder when running the command:
 ```shell
-ansible-playbook -i inventory myPlaybook.yaml
+ansible-playbook -i inventory jenkinsPlaybook.yaml
 ```

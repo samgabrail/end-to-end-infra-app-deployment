@@ -1,10 +1,10 @@
 # Overview
 
-This folder is used to run an ansible playbook that will start the Jenkins Docker container. Ansible runs here directly on the Admin's computer. Once the Jenkins Docker container is created, Ansible will get invoked by Jenkins directly as part of the pipeline.
-
-[Ansible Docker Resource](https://docs.ansible.com/ansible/2.5/modules/docker_container_module.html)
+This folder is used to run an ansible playbook from withing a Jenkins pipeline. It's used to configure the two VMs below:
+1. The main Python app VM hosting the Webblog application. 
+2. The VM hosting the MongoDB.
 
 Make sure you're in the ansible folder when running the command:
 ```shell
-ansible-playbook -i inventory myPlaybook.yaml
+ansible-playbook -i inventory appPlaybook.yaml
 ```

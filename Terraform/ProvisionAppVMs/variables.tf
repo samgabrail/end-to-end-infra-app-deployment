@@ -46,6 +46,11 @@ variable "vm_size" {
   default     = "Standard_A0"
 }
 
+variable "node_count" {
+  description = "Number of VMs"
+  default     = 2
+}
+
 variable "adminuser" {
   description = "Specifies the admin username."
   default     = "adminuser"
