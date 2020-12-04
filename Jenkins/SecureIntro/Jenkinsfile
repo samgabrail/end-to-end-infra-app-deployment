@@ -41,7 +41,7 @@ node() {
           )
         }
       }
-        stage("Get login token with Role ID and unwrapped Secret ID"){
+        stage("Pipeline Takes Over and Gets login token with Role ID and unwrapped Secret ID"){
           def VAULT_LOGIN_TOKEN = ""
           env.VAULT_LOGIN_TOKEN = sh(
             returnStdout: true,
