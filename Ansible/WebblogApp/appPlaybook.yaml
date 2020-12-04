@@ -28,7 +28,7 @@
         volumes:
           - mongo_data:/data/db
 
-  - hosts: webblog-app-vm
+- hosts: webblog-app-vm
   become_user: root
   become: true
   tasks:
