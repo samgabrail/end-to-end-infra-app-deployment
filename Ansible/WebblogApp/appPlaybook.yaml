@@ -56,6 +56,8 @@
         state: started
         name: vault
         daemon_reload: yes
+    - pause:
+        seconds: 15
     - name: Copy Webblog App
       copy: src=../../Application/app dest=/home/adminuser/
     - name: Install Webblog Python Dependencies
