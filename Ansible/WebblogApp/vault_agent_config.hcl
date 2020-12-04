@@ -18,6 +18,7 @@ auto_auth {
   sink "file" {
     config = {
       path = "/tmp/vault_token"
+      mode = 0644
       }
     }
 }

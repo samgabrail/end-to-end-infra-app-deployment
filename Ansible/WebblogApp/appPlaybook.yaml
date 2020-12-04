@@ -64,4 +64,4 @@
       pip:
         requirements: /home/adminuser/app/requirements.txt
     - name: Run the Webblog App
-      script: app.py
+      script: /home/adminuser/app/app.py
