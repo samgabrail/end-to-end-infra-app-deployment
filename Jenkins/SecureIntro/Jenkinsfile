@@ -71,12 +71,11 @@ node() {
           // need to figure out what to do with the quotes missing below for app.terraform.io 
 
           sh '''
-          cat <<EOF /var/jenkins_home/.terraformrc
+          cat <<EOF > /var/jenkins_home/.terraformrc
           credentials "app.terraform.io" {
               token = "$(vault kv get -field=tfc_token internal/tfc)"
           }
-
-EOF
+          EOF
           '''.stripIndent()
 
           
