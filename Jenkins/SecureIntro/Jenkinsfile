@@ -67,22 +67,30 @@ node() {
           '''
         }
 
-        // stage("Retrieve TFC token from Vault and create the .terraformrc file") {
-        //   // need to figure out what to do with the quotes missing below for app.terraform.io 
-        //   sh '''
-        //       echo credentials "app.terraform.io" {token = $(vault kv get -field=tfc_token internal/tfc)} > /var/jenkins_home/.terraformrc
-        //   '''
-        // } 
+        stage("Retrieve TFC token from Vault and create the .terraformrc file") {
+          // need to figure out what to do with the quotes missing below for app.terraform.io 
+          sh '''
+              cat << EOF > /var/jenkins_home/.terraformrc
+                credentials "app.terraform.io" 
+                  {
+                    token = $(vault kv get -field=tfc_token internal/tfc)
+                  }
+                EOF
+          '''
+        } 
+        
 
-        // stage("Terraform to Provision the 2 App VMs in Azure") {
-        //   sh '''
-        //       cd /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs
-        //       terraform init
-        //       terraform apply --auto-approve
-        //   '''
-        // }  
+
+        stage("Terraform to Provision the 2 App VMs in Azure") {
+          sh '''
+              cd /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs
+              terraform init
+              terraform apply --auto-approve
+          '''
+        }  
 
         stage("Create Role-id and Wrapped Secret-id for the Vault Agent") {
+          // this works well
           sh '''
               vault read -field=role_id auth/approle/role/webblog-approle/role-id > /tmp/app_role_id
               vault write -field=wrapping_token -wrap-ttl=200s -f auth/approle/role/webblog-approle/secret-id > /tmp/app_wrap_secret_id
