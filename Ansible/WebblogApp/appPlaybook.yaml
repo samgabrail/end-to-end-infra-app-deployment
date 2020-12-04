@@ -1,29 +1,4 @@
 ---
-- hosts: webblog-app-vm
-  become_user: root
-  become: true
-  tasks:
-    - name: Install unzip
-      package:
-        name: unzip
-        update_cache: yes
-    - name: Download and install vault binary
-      unarchive:
-        src: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip"
-        dest: /usr/local/bin/
-        remote_src: True
-    - name: Create vault config directory
-      file: state=directory path=/etc/opt/vault/
-    - name: Copy vault config to server
-      copy: src=vault_agent_config.hcl dest=/etc/opt/vault/
-    - name: Copy role_id for Vault Agent
-      copy: src=/tmp/app_role_id dest=/tmp/webblog_role_id
-    - name: Copy wrapped_secret_id for Vault Agent
-      copy: src=/tmp/app_wrap_secret_id dest=/tmp/webblog_wrapped_secret_id
-    - name: Run the Vault Agent
-      shell:
-        cmd: vault agent -config=/etc/opt/vault/vault_agent_config.hcl
-
 - hosts: webblog-db-vm
   become_user: root
   become: true
@@ -52,3 +27,35 @@
           MONGO_INITDB_ROOT_PASSWORD: "{{ mongo_root_password }}"
         volumes:
           - mongo_data:/data/db
+
+  - hosts: webblog-app-vm
+  become_user: root
+  become: true
+  tasks:
+    - name: Install unzip
+      package:
+        name: unzip
+        update_cache: yes
+    - name: Download and install vault binary
+      unarchive:
+        src: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip"
+        dest: /usr/local/bin/
+        remote_src: True
+    - name: Create vault config directory
+      file: state=directory path=/etc/opt/vault/
+    - name: Copy vault config to server
+      copy: src=vault_agent_config.hcl dest=/etc/opt/vault/
+    - name: Copy role_id for Vault Agent
+      copy: src=/tmp/app_role_id dest=/tmp/webblog_role_id
+    - name: Copy wrapped_secret_id for Vault Agent
+      copy: src=/tmp/app_wrap_secret_id dest=/tmp/webblog_wrapped_secret_id
+    - name: Run the Vault Agent
+      shell:
+        cmd: vault agent -config=/etc/opt/vault/vault_agent_config.hcl
+    - name: Copy Webblog App
+      copy: src=../../Application/app dest=/home/adminuser/
+    - name: Install Webblog Python Dependencies
+      pip:
+        requirements: /home/adminuser/app/requirements.txt
+    - name: Run the Webblog App
+      script: app.py
