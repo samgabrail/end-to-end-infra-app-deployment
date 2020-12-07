@@ -15,6 +15,13 @@
         source: pull
         state: present
         force_source: yes
+    - name: Change file ownership, group and permissions
+      file:
+        path: /home/adminuser/jenkins_data
+        state: directory
+        recurse: yes
+        owner: adminuser
+        group: adminuser
     - name: Create Jenkins container
       docker_container:
         name: "jenkins"
@@ -32,6 +39,10 @@
         owner: adminuser
         group: adminuser
         mode: 0400
+    - name: Install unzip
+      package:
+        name: unzip
+        update_cache: yes
     - name: Download and install consul binary
       unarchive:
         src: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip"
