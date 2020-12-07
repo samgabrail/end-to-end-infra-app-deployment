@@ -1,32 +1,11 @@
 ---
-- hosts: webblog-db-vm
+- hosts: webblog
   become_user: root
   become: true
   tasks:
     - name: Install pip3
       apt:
         name: python3-pip
-    - name: Install Docker module for Python
-      pip:
-        name: docker
-    - name: Pull the Mongo Docker image
-      docker_image:
-        name: "mongo:4.2.7"
-        source: pull
-        state: present
-        force_source: yes
-    - name: Create Mongo container
-      docker_container:
-        name: "mongo"
-        image: "mongo:4.2.7"
-        state: started
-        ports:
-          - "27017:27017"
-        env:
-          MONGO_INITDB_ROOT_USERNAME: "{{ mongo_root_user }}"
-          MONGO_INITDB_ROOT_PASSWORD: "{{ mongo_root_password }}"
-        volumes:
-          - mongo_data:/data/db
     - name: Install unzip
       package:
         name: unzip
@@ -53,17 +32,43 @@
         name: consul
         daemon_reload: yes
 
+- hosts: webblog-db-vm
+  become_user: root
+  become: true
+  tasks:
+    - name: Install Docker module for Python
+      pip:
+        name: docker
+    - name: Pull the Mongo Docker image
+      docker_image:
+        name: "mongo:4.2.7"
+        source: pull
+        state: present
+        force_source: yes
+    - name: Create Mongo container
+      docker_container:
+        name: "mongo"
+        image: "mongo:4.2.7"
+        state: started
+        ports:
+          - "27017:27017"
+        env:
+          MONGO_INITDB_ROOT_USERNAME: "{{ mongo_root_user }}"
+          MONGO_INITDB_ROOT_PASSWORD: "{{ mongo_root_password }}"
+        volumes:
+          - mongo_data:/data/db
+    - name: Copy consul service to server
+      copy: src=webblog_app_service.json dest=/etc/consul.d
+    - name: Restart consul service
+      systemd:
+        state: started
+        name: consul
+        daemon_reload: yes
+
 - hosts: webblog-app-vm
   become_user: root
   become: true
   tasks:
-    - name: Install pip3
-      apt:
-        name: python3-pip
-    - name: Install unzip
-      package:
-        name: unzip
-        update_cache: yes
     - name: Download and install vault binary
       unarchive:
         src: "https://releases.hashicorp.com/vault/{{ vault_version }}/vault_{{ vault_version }}_linux_amd64.zip"
@@ -98,18 +103,9 @@
         state: started
         name: webblog
         daemon_reload: yes
-    - name: Download and install consul binary
-      unarchive:
-        src: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip"
-        dest: /usr/local/bin/
-        remote_src: True
-    - name: Create consul config directory
-      file: state=directory path=/etc/consul.d
-    - name: Copy consul config to server
-      copy: src=consul_config.hcl dest=/etc/consul.d
     - name: Copy consul service to server
-      copy: src=consul.service dest=/etc/systemd/system/consul.service
-    - name: Start consul service
+      copy: src=mongo_service.json dest=/etc/consul.d
+    - name: Restart consul service
       systemd:
         state: started
         name: consul

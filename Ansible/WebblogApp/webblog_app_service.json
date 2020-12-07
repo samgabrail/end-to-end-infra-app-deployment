@@ -1,0 +1,18 @@
+{
+    "service": {
+      "name": "mongo",
+      "tags": [
+        "database",
+        "production"
+      ],
+      "port": 27017,
+      "connect": { "sidecar_service": {} },
+      "check": {
+        "id": "mongo",
+        "name": "mongo TCP on port 27017",
+        "tcp": "localhost:27017",
+        "interval": "10s",
+        "timeout": "1s"
+      }
+    }
+  }
