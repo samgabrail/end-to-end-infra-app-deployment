@@ -95,6 +95,18 @@ resource "azurerm_network_security_group" "webblog-sg" {
   }
 
   security_rule {
+    name                       = "Consul"
+    priority                   = 102
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "8500-8502"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
     name                       = "SSH"
     priority                   = 101
     direction                  = "Inbound"
