@@ -32,3 +32,19 @@
         owner: adminuser
         group: adminuser
         mode: 0400
+    - name: Download and install consul binary
+      unarchive:
+        src: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip"
+        dest: /usr/local/bin/
+        remote_src: True
+    - name: Create consul config directory
+      file: state=directory path=/etc/consul.d
+    - name: Copy consul config to server
+      copy: src=consul_config.hcl dest=/etc/consul.d
+    - name: Copy consul service to server
+      copy: src=consul.service dest=/etc/systemd/system/consul.service
+    - name: Start consul service
+      systemd:
+        state: started
+        name: consul
+        daemon_reload: yes

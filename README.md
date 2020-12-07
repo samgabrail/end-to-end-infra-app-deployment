@@ -294,6 +294,34 @@ terraform apply --auto-approve
 ```
 
 
+## Update Vault Dynamic Secrets Configuration
 
-vault read -field=role_id auth/approle/role/webblog-approle/role-id
-vault write -field=wrapping_token -wrap-ttl=200s -f auth/approle/role/webblog-approle/secret-id
+A Vault admin will need to run the configuration below to allow our App to retrieve dynamic mongoDB secrets from Vault.
+
+```shell
+resource "vault_mount" "db_azure" {
+  path = "mongodb_azure"
+  type = "database"
+  description = "Dynamic Secrets Engine for WebBlog MongoDB on Azure."
+}
+
+resource "vault_database_secret_backend_connection" "mongodb_azure" {
+  backend       = vault_mount.db_azure.path
+  name          = "mongodb_azure"
+  allowed_roles = ["mongodb-azure-role"]
+
+  mongodb {
+    connection_url = "mongodb://${var.DB_USER}:${var.DB_PASSWORD}@${var.DB_URL_AZURE}/admin"
+    
+  }
+}
+
+resource "vault_database_secret_backend_role" "mongodb-azure-role" {
+  backend             = vault_mount.db_azure.path
+  name                = "mongodb-azure-role"
+  db_name             = vault_database_secret_backend_connection.mongodb_azure.name
+  default_ttl         = "10"
+  max_ttl             = "86400"
+  creation_statements = ["{ \"db\": \"admin\", \"roles\": [{ \"role\": \"readWriteAnyDatabase\" }, {\"role\": \"read\", \"db\": \"foo\"}] }"]
+}
+```

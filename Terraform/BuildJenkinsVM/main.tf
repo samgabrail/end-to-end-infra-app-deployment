@@ -151,7 +151,6 @@ resource "azurerm_linux_virtual_machine" "jenkins" {
   
 }
 
-
 // resource "null_resource" "run-jenkins-docker" {
 //   depends_on = [
 //     azurerm_linux_virtual_machine.jenkins
