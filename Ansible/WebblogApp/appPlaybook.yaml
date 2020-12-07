@@ -87,6 +87,7 @@
         daemon_reload: yes
     - name: Register Service with Envoy
       command: consul connect envoy -sidecar-for mongo &
+      ignore_errors: yes
 
 - hosts: webblog-app-vm
   become_user: root
@@ -135,3 +136,4 @@
         daemon_reload: yes
     - name: Register Service with Envoy
       command: consul connect envoy -sidecar-for webblog_app &
+      ignore_errors: yes
