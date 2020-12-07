@@ -83,7 +83,7 @@ node() {
           '''
         }  
 
-        stage("Create Role-id and Wrapped Secret-id for the Vault Agent on App VM") {
+        stage("Create Role-id and Wrapped Secret-id for the Vault Agent on App VMs") {
           // Ansible to send the Role-id and the Wrapped Secret-id
           sh '''
               vault read -field=role_id auth/approle/role/webblog-approle/role-id > /tmp/app_role_id
@@ -91,7 +91,7 @@ node() {
           '''
         }
 
-        stage("Ansible to Configure Webblog App VM") {
+        stage("Ansible to Configure Webblog App VMs") {
           // We will need to install Vault to use the Vault agent and Consul for service mesh
           // Grab MongoDB Root Credentials from Vault and pass it to Ansible to create the MongoDB Container
           sh '''

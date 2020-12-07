@@ -61,3 +61,24 @@
         state: started
         name: consul
         daemon_reload: yes
+    - name: Install Envoy Dependencies
+      apt:
+        update_cache: yes
+        pkg:
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg-agent
+        - software-properties-common
+    - name: Add an Apt signing key
+      apt_key:
+        url: https://getenvoy.io/gpg
+        state: present
+    - name: Add Envoy repository into sources list
+      apt_repository:
+        repo: deb [arch=amd64] https://dl.bintray.com/tetrate/getenvoy-deb bionic stable
+        state: present
+    - name: Install Envoy
+      apt:
+        name: getenvoy-envoy
+        update_cache: yes
