@@ -32,10 +32,12 @@
           - "50000:50000"
         volumes:
           - /home/adminuser/jenkins_data:/var/jenkins_home
+    - name: Create .ssh directory
+      file: state=directory path=/home/adminuser/jenkins_data/.ssh
     - name: Copy the Private SSH Key for Jenkins to Access Azure VMs
       copy:
         src: /mnt/c/Users/Sam/.ssh/id_rsa
-        dest: /home/adminuser/jenkins_data/.ssh
+        dest: /home/adminuser/jenkins_data/.ssh/id_rsa
         owner: adminuser
         group: adminuser
         mode: 0400
