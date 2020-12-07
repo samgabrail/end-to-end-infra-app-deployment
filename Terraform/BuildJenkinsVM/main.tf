@@ -81,7 +81,7 @@ resource "azurerm_network_security_group" "jenkins-sg" {
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = "8500-8502"
+    destination_port_range     = "8500-8502,8600,8300-8302,21000-21255"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
