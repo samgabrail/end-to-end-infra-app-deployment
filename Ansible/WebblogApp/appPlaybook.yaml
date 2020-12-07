@@ -57,8 +57,8 @@
           MONGO_INITDB_ROOT_PASSWORD: "{{ mongo_root_password }}"
         volumes:
           - mongo_data:/data/db
-    - name: Copy consul service to server
-      copy: src=webblog_app_service.json dest=/etc/consul.d
+    - name: Copy Mongo service to server
+      copy: src=mongo_service.json dest=/etc/consul.d
     - name: Restart consul service
       systemd:
         state: started
@@ -103,8 +103,8 @@
         state: started
         name: webblog
         daemon_reload: yes
-    - name: Copy consul service to server
-      copy: src=mongo_service.json dest=/etc/consul.d
+    - name: Copy Webblog App service to server
+      copy: src=webblog_app_service.json dest=/etc/consul.d
     - name: Restart consul service
       systemd:
         state: started

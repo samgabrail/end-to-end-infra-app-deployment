@@ -1,16 +1,16 @@
 {
     "service": {
-      "name": "mongo",
+      "name": "webblog_app",
       "tags": [
-        "database",
+        "Python",
         "production"
       ],
-      "port": 27017,
+      "port": 8080,
       "connect": { "sidecar_service": {} },
       "check": {
-        "id": "mongo",
-        "name": "mongo TCP on port 27017",
-        "tcp": "localhost:27017",
+        "id": "webblog",
+        "name": "Webblog App TCP on port 8080",
+        "tcp": "localhost:8080",
         "interval": "10s",
         "timeout": "1s"
       }
