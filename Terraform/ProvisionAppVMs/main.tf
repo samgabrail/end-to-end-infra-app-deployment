@@ -158,7 +158,7 @@ resource "azurerm_linux_virtual_machine" "webblog" {
   tags = local.common_tags
 
   network_interface_ids = [element(azurerm_network_interface.webblog-nic.*.id, count.index + 1)]
-
+  // Add a public key to the same folder as the main.tf script (we use Ansible to send the private key to the Jenkins machine)
   admin_ssh_key {
     username   = var.adminuser
     public_key = file("id_rsa.pub")

@@ -135,7 +135,7 @@ resource "azurerm_linux_virtual_machine" "jenkins" {
   tags = local.common_tags
   
   network_interface_ids         = [azurerm_network_interface.jenkins-nic.id]
-
+  // Add a public key to the same folder as the main.tf script (we use Ansible to send the private key to the Jenkins machine)
   admin_ssh_key {
     username   = var.adminuser
     public_key = file("id_rsa.pub")

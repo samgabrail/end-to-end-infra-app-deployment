@@ -41,6 +41,9 @@
   become_user: root
   become: true
   tasks:
+    - name: Install pip3
+      apt:
+        name: python3-pip
     - name: Install unzip
       package:
         name: unzip
