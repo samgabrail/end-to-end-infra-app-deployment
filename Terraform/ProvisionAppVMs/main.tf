@@ -96,7 +96,7 @@ resource "azurerm_network_security_group" "webblog-sg" {
 
   security_rule {
     name                       = "Consul"
-    priority                   = 102
+    priority                   = 103
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
