@@ -8,11 +8,10 @@ class Database(object):
     env = Env()
     # Read .env into os.environ
     env.read_env()
-    # SERVER = env('DB_SERVER')
-    SERVER = os.environ['DB_SERVER']
-    print(f'This is the DB Server: {SERVER}')
-    # PORT = env('DB_PORT')
-    PORT = os.environ['DB_PORT']
+    SERVER = env('DB_SERVER')
+    # SERVER = os.environ['DB_SERVER']
+    PORT = env('DB_PORT')
+    # PORT = os.environ['DB_PORT']
     VAULT_URL = env('VAULT_URL')
     # Uncomment USER and PASSWORD below to grab creds from .env file
     # USER = env('DB_USER')
@@ -60,7 +59,7 @@ class Database(object):
         print('Initializing Database using Dynamic Secrets from Vault')
         Database.buildURI_Injected_DynamicSecrets()
         Database.URI = f'mongodb://{Database.USER}:{Database.PASSWORD}@{Database.SERVER}:{Database.PORT}'
-        print(f'Server: {Database.SERVER} and PORT: {Database.PORT} and user: {Database.USER} and password: {Database.PASSWORD}')
+        print(f'Database Server: {Database.SERVER} and PORT: {Database.PORT} and user: {Database.USER} and password: {Database.PASSWORD}')
         client = pymongo.MongoClient(Database.URI)
         if Database.ENCRYPT:
             Database.DATABASE = client['webblogencrypted']
