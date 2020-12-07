@@ -139,8 +139,14 @@ vault read auth/jenkins/role/jenkins-approle/role-id
 vault write -field=secret_id -f auth/jenkins/role/jenkins-approle/secret-id
 ```
 
-You can now take the `role-id` and the `secret-id` and insert them into the Jenkins Vault plugin for authentication.
+You can now take the `role-id` and the `secret-id` and insert them into the Jenkins Vault plugin for authentication. Please make sure you have the correct path for the AppRole.
 
+You can run a test to login below:
+```shell
+vault write auth/jenkins/login \
+    role_id=a79bdd3a-81e3-e356-4c9e-46d22ff3fdc5 \
+    secret_id=8b635683-82d1-2fc5-7028-682566137e74
+```
 #### Create an Approle for the Jenkins Pipeline
 
 Once again we use Terraform for configuration as shown below:
