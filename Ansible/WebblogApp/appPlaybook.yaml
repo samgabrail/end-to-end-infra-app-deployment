@@ -53,7 +53,6 @@
         name: getenvoy-envoy
         update_cache: yes
 
-
 - hosts: webblog-db-vm
   become_user: root
   become: true
@@ -87,7 +86,7 @@
         name: consul
         daemon_reload: yes
     - name: Register Service with Envoy
-      command: nohup consul connect envoy -sidecar-for mongo &
+      command: consul connect envoy -sidecar-for mongo &
 
 - hosts: webblog-app-vm
   become_user: root
@@ -135,4 +134,4 @@
         name: consul
         daemon_reload: yes
     - name: Register Service with Envoy
-      command: nohup consul connect envoy -sidecar-for webblog_app &
+      command: consul connect envoy -sidecar-for webblog_app &
