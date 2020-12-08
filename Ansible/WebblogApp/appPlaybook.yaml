@@ -86,11 +86,11 @@
         name: consul
         daemon_reload: yes
     - name: Copy Mongo Envoy service to server
-      copy: src=envoy_webblog.service dest=/etc/systemd/system/envoy_webblog.service
+      copy: src=envoy_mongo.service dest=/etc/systemd/system/envoy_mongo.service
     - name: Start Register Mongo Service with Envoy
       systemd:
         state: started
-        name: envoy_webblog
+        name: envoy_mongo
         daemon_reload: yes
 
 - hosts: webblog-app-vm
