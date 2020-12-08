@@ -1,5 +1,5 @@
 ---
-- hosts: webblog
+- hosts: all
   become_user: root
   become: true
   tasks:
@@ -22,15 +22,8 @@
         remote_src: True
     - name: Create consul config directory
       file: state=directory path=/etc/consul.d
-    - name: Copy consul config to server
-      copy: src=consul_config.hcl dest=/etc/consul.d
-    - name: Copy consul service to server
-      copy: src=consul.service dest=/etc/systemd/system/consul.service
-    - name: Start consul service
-      systemd:
-        state: started
-        name: consul
-        daemon_reload: yes
+    - name: Copy consul service to server and clients
+      copy: src=SystemdServices/consul.service dest=/etc/systemd/system/consul.service
     - name: Install Envoy Dependencies
       apt:
         update_cache: yes
@@ -52,6 +45,30 @@
       apt:
         name: getenvoy-envoy
         update_cache: yes
+
+- hosts: consul_server
+  become_user: root
+  become: true
+  tasks:
+    - name: Copy consul server config to server
+      copy: src=ConsulConfig/consul_server_config.hcl dest=/etc/consul.d
+    - name: Start consul service
+      systemd:
+        state: started
+        name: consul
+        daemon_reload: yes
+
+- hosts: consul_clients
+  become_user: root
+  become: true
+  tasks:
+    - name: Copy consul client config to clients
+      copy: src=ConsulConfig/consul_client_config.hcl dest=/etc/consul.d
+    - name: Start consul service
+      systemd:
+        state: started
+        name: consul
+        daemon_reload: yes
 
 - hosts: webblog-db-vm
   become_user: root
@@ -79,14 +96,14 @@
         volumes:
           - mongo_data:/data/db
     - name: Copy Mongo service to server
-      copy: src=mongo_service.json dest=/etc/consul.d
+      copy: src=WebblogServices/mongo_service.json dest=/etc/consul.d
     - name: Restart consul service
       systemd:
         state: started
         name: consul
         daemon_reload: yes
     - name: Copy Mongo Envoy service to server
-      copy: src=envoy_mongo.service dest=/etc/systemd/system/envoy_mongo.service
+      copy: src=SystemdServices/envoy_mongo.service dest=/etc/systemd/system/envoy_mongo.service
     - name: Start Register Mongo Service with Envoy
       systemd:
         state: started
@@ -105,13 +122,13 @@
     - name: Create vault config directory
       file: state=directory path=/etc/opt/vault/
     - name: Copy vault config to server
-      copy: src=vault_agent_config.hcl dest=/etc/opt/vault/
+      copy: src=VaultConfig/vault_agent_config.hcl dest=/etc/opt/vault/
     - name: Copy role_id for Vault Agent
       copy: src=/tmp/app_role_id dest=/tmp/webblog_role_id
     - name: Copy wrapped_secret_id for Vault Agent
       copy: src=/tmp/app_wrap_secret_id dest=/tmp/webblog_wrapped_secret_id
     - name: Copy vault service to server
-      copy: src=vault.service dest=/etc/systemd/system/vault.service
+      copy: src=SystemdServices/vault.service dest=/etc/systemd/system/vault.service
     - name: Start vault service
       systemd:
         state: started
@@ -125,21 +142,21 @@
       pip:
         requirements: /home/adminuser/app/requirements.txt
     - name: Copy Webblog App service to server
-      copy: src=webblog.service dest=/etc/systemd/system/webblog.service
+      copy: src=SystemdServices/webblog.service dest=/etc/systemd/system/webblog.service
     - name: Start Webblog App service
       systemd:
         state: started
         name: webblog
         daemon_reload: yes
     - name: Copy Webblog App service to server
-      copy: src=webblog_app_service.json dest=/etc/consul.d
+      copy: src=WebblogServices/webblog_app_service.json dest=/etc/consul.d
     - name: Restart consul service
       systemd:
         state: started
         name: consul
         daemon_reload: yes
     - name: Copy Webblog App service to server
-      copy: src=envoy_webblog.service dest=/etc/systemd/system/envoy_webblog.service
+      copy: src=SystemdServices/envoy_webblog.service dest=/etc/systemd/system/envoy_webblog.service
     - name: Start Register Webblog Service with Envoy
       systemd:
         state: started

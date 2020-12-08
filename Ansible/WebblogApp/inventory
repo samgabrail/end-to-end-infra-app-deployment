@@ -1,5 +1,6 @@
 [all:children]
-webblog
+consul_clients
+consul_server
 
 [all:vars]
 ansible_user=adminuser
@@ -7,6 +8,9 @@ ansible_python_interpreter=/usr/bin/python3
 vault_version=1.6.0
 consul_version=1.9.0
 
-[webblog]
+[consul_clients]
 webblog-app-vm ansible_host=samg-webblog-01.centralus.cloudapp.azure.com
 webblog-db-vm ansible_host=samg-webblog-02.centralus.cloudapp.azure.com
+
+[consul_server]
+webblog-consul-server ansible_host=samg-webblog-03.centralus.cloudapp.azure.com
