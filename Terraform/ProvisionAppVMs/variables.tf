@@ -55,3 +55,9 @@ variable "adminuser" {
   description = "Specifies the admin username."
   default     = "adminuser"
 }
+
+// variable "vm_names" {
+//   description = "Names of the VMs"
+//   type = "list"
+//   default = ["webblog-01", "webblog-02", "webblog-03"]
+// }
