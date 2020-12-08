@@ -134,7 +134,7 @@ resource "azurerm_network_security_group" "webblog-sg" {
 resource "azurerm_network_interface" "webblog-nic" {
   // count               = var.node_count
   for_each            = var.vm_names
-  name                = "${var.prefix}-${var.app-prefix}-${each.value}-nic"
+  name                = "${var.prefix}-${var.app-prefix}-${each.key}-nic"
   location            = var.location
   resource_group_name = data.azurerm_resource_group.jenkinsresourcegroup.name
 
@@ -142,7 +142,7 @@ resource "azurerm_network_interface" "webblog-nic" {
     name                          = "${var.prefix}-${var.app-prefix}-ipconfig"
     subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = element(azurerm_public_ip.webblog-pip.*.id, var.vm_names[each.value])
+    public_ip_address_id          = element(azurerm_public_ip.webblog-pip.*.id, var.vm_names[each.key])
   }
 }
 
@@ -154,17 +154,17 @@ resource "azurerm_subnet_network_security_group_association" "webblog_subnet_nsg
 resource "azurerm_public_ip" "webblog-pip" {
   // count               = var.node_count
   for_each            = var.vm_names
-  name                = "${var.prefix}-${var.app-prefix}-${each.value}-ip"
+  name                = "${var.prefix}-${var.app-prefix}-${each.key}-ip"
   location            = var.location
   resource_group_name = data.azurerm_resource_group.jenkinsresourcegroup.name
   allocation_method   = "Dynamic"
-  domain_name_label   = "${var.prefix}-${var.app-prefix}-${each.value}"
+  domain_name_label   = "${var.prefix}-${var.app-prefix}-${each.key}"
 }
 
 resource "azurerm_linux_virtual_machine" "webblog" {
   // count               = var.node_count
   for_each            = var.vm_names
-  name                = "${var.prefix}-${var.app-prefix}-${each.value}"
+  name                = "${var.prefix}-${var.app-prefix}-${each.key}"
   location            = var.location
   resource_group_name = data.azurerm_resource_group.jenkinsresourcegroup.name
   size                = var.vm_size
@@ -172,7 +172,7 @@ resource "azurerm_linux_virtual_machine" "webblog" {
 
   tags = local.common_tags
 
-  network_interface_ids = [element(azurerm_network_interface.webblog-nic.*.id, var.vm_names[each.value])]
+  network_interface_ids = [element(azurerm_network_interface.webblog-nic.*.id, var.vm_names[each.key])]
   // Add a public key to the same folder as the main.tf script (we use Ansible to send the private key to the Jenkins machine)
   admin_ssh_key {
     username   = var.adminuser
@@ -182,7 +182,7 @@ resource "azurerm_linux_virtual_machine" "webblog" {
   source_image_id = data.azurerm_image.docker-image.id
 
   os_disk {
-    name                 = "${var.prefix}-${var.app-prefix}-${each.value}-osdisk"
+    name                 = "${var.prefix}-${var.app-prefix}-${each.key}-osdisk"
     storage_account_type = "Standard_LRS"
     caching              = "ReadWrite"
   }
