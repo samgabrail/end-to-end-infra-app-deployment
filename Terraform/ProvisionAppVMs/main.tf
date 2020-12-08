@@ -1,10 +1,10 @@
 terraform {
-  // backend "remote" {
-  //   organization = "HashiCorp-Sam"
-  //   workspaces {
-  //     name = "end-to-end-infra-app-deployment-webblog-app-azure"
-  //   }
-  // }
+  backend "remote" {
+    organization = "HashiCorp-Sam"
+    workspaces {
+      name = "end-to-end-infra-app-deployment-webblog-app-azure"
+    }
+  }
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
