@@ -134,7 +134,7 @@ resource "azurerm_network_security_group" "webblog-sg" {
 resource "azurerm_network_interface" "webblog-nic" {
   // count               = var.node_count
   for_each = var.vm_names
-  name                = "${var.prefix}-${each.key}-nic"
+  name                = "${var.prefix}-${var.app-prefix}-${each.key}-nic"
   location            = var.location
   resource_group_name = data.azurerm_resource_group.jenkinsresourcegroup.name
 
@@ -154,17 +154,17 @@ resource "azurerm_subnet_network_security_group_association" "webblog_subnet_nsg
 resource "azurerm_public_ip" "webblog-pip" {
   // count               = var.node_count
   for_each = var.vm_names
-  name                = "${var.prefix}-${each.key}-ip"
+  name                = "${var.prefix}-${var.app-prefix}-${each.key}-ip"
   location            = var.location
   resource_group_name = data.azurerm_resource_group.jenkinsresourcegroup.name
   allocation_method   = "Dynamic"
-  domain_name_label   = "${var.prefix}-${each.key}"
+  domain_name_label   = "${var.prefix}-${var.app-prefix}-${each.key}"
 }
 
 resource "azurerm_linux_virtual_machine" "webblog" {
   // count               = var.node_count
   for_each = var.vm_names
-  name                = "${var.prefix}-${each.key}"
+  name                = "${var.prefix}-${var.app-prefix}-${each.key}"
   location            = var.location
   resource_group_name = data.azurerm_resource_group.jenkinsresourcegroup.name
   size                = var.vm_size
@@ -182,7 +182,7 @@ resource "azurerm_linux_virtual_machine" "webblog" {
   source_image_id = data.azurerm_image.docker-image.id
 
   os_disk {
-    name                 = "${var.prefix}-osdisk-${each.key}"
+    name                 = "${var.prefix}-${var.app-prefix}-${each.key}-osdisk"
     storage_account_type = "Standard_LRS"
     caching              = "ReadWrite"
   }
