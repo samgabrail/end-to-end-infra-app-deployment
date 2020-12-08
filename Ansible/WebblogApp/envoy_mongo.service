@@ -1,0 +1,8 @@
+[Unit]
+Description=Envoy MongoDB Proxy Service
+
+[Service]
+ExecStart=/usr/local/bin/consul connect envoy -sidecar-for mongo
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,8 @@
+[Unit]
+Description=Envoy Webblog Proxy Service
+
+[Service]
+ExecStart=/usr/local/bin/consul connect envoy -sidecar-for webblog_app
+
+[Install]
+WantedBy=multi-user.target

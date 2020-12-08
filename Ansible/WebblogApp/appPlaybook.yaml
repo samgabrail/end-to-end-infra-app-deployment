@@ -85,9 +85,13 @@
         state: started
         name: consul
         daemon_reload: yes
-    - name: Register Service with Envoy
-      command: consul connect envoy -sidecar-for mongo &
-      ignore_errors: yes
+    - name: Copy Mongo Envoy service to server
+      copy: src=envoy_webblog.service dest=/etc/systemd/system/envoy_webblog.service
+    - name: Start Register Mongo Service with Envoy
+      systemd:
+        state: started
+        name: envoy_webblog
+        daemon_reload: yes
 
 - hosts: webblog-app-vm
   become_user: root
@@ -134,6 +138,10 @@
         state: started
         name: consul
         daemon_reload: yes
-    - name: Register Service with Envoy
-      command: consul connect envoy -sidecar-for webblog_app &
-      ignore_errors: yes
+    - name: Copy Webblog App service to server
+      copy: src=envoy_webblog.service dest=/etc/systemd/system/envoy_webblog.service
+    - name: Start Register Webblog Service with Envoy
+      systemd:
+        state: started
+        name: envoy_webblog
+        daemon_reload: yes
