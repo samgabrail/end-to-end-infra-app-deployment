@@ -153,6 +153,7 @@ resource "azurerm_subnet_network_security_group_association" "webblog_subnet_nsg
 
 resource "azurerm_public_ip" "webblog-pip" {
   // count               = var.node_count
+  for_each = var.vm_names
   name                = "${var.prefix}-${each.key}-ip"
   location            = var.location
   resource_group_name = data.azurerm_resource_group.jenkinsresourcegroup.name
@@ -162,6 +163,7 @@ resource "azurerm_public_ip" "webblog-pip" {
 
 resource "azurerm_linux_virtual_machine" "webblog" {
   // count               = var.node_count
+  for_each = var.vm_names
   name                = "${var.prefix}-${each.key}"
   location            = var.location
   resource_group_name = data.azurerm_resource_group.jenkinsresourcegroup.name
