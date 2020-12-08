@@ -1,5 +1,8 @@
 # Outputs file
 output "webblog_public_dns" {
-  value = [azurerm_public_ip.webblog-pip.*.fqdn]
-
+  value = {
+  for ip in azurerm_public_ip.webblog-pip:
+  ip.name => ip.fqdn
+  }
+  // value = [azurerm_public_ip.webblog-pip.*.fqdn]
 }
