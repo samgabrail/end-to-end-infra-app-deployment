@@ -142,7 +142,7 @@ resource "azurerm_network_interface" "webblog-nic" {
     name                          = "${var.prefix}-${var.app-prefix}-ipconfig"
     subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.webblog-pip[each.key].id
+    public_ip_address_id          = element(azurerm_public_ip.webblog-pip.*.id, var.vm_names[each.key])
   }
 }
 
@@ -172,7 +172,7 @@ resource "azurerm_linux_virtual_machine" "webblog" {
 
   tags = local.common_tags
 
-  network_interface_ids = azurerm_network_interface.webblog-nic[each.key].id
+  network_interface_ids = [element(azurerm_network_interface.webblog-nic.*.id, var.vm_names[each.key]]
   // Add a public key to the same folder as the main.tf script (we use Ansible to send the private key to the Jenkins machine)
   admin_ssh_key {
     username   = var.adminuser
