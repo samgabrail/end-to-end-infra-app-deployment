@@ -100,9 +100,9 @@ node() {
           // Search for the output FQDN from Terraform and feed it into the inventory file of Ansible
           sh '''
               cd /var/jenkins_home/workspace/Webblog_App@script/Ansible/WebblogApp
-              app=$(cat /tmp/tf_output.txt | grep -oP '01-ip = "\K[^"]+')
-              db=$(cat /tmp/tf_output.txt | grep -oP '02-ip = "\K[^"]+')
-              consulserver=$(cat /tmp/tf_output.txt | grep -oP '03-ip = "\K[^"]+')
+              app=$(cat /tmp/tf_output.txt | grep -oP '01-ip = "\\K[^"]+')
+              db=$(cat /tmp/tf_output.txt | grep -oP '02-ip = "\\K[^"]+')
+              consulserver=$(cat /tmp/tf_output.txt | grep -oP '03-ip = "\\K[^"]+')
               sed -i "s/<placeholder_app>/${app}/g" inventory
               sed -i "s/<placeholder_db>/${db}/g" inventory
               sed -i "s/<placeholder_consul_server>/${consulserver}/g" inventory
