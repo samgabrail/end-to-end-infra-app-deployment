@@ -54,7 +54,7 @@
       copy: src=ConsulConfig/consul_server_config.hcl dest=/etc/consul.d
     - name: Start consul service
       systemd:
-        state: started
+        state: restarted
         name: consul
         daemon_reload: yes
 
@@ -66,7 +66,7 @@
       copy: src=ConsulConfig/consul_client_config.hcl dest=/etc/consul.d
     - name: Start consul service
       systemd:
-        state: started
+        state: restarted
         name: consul
         daemon_reload: yes
 
@@ -99,14 +99,14 @@
       copy: src=WebblogServices/mongo_service.json dest=/etc/consul.d
     - name: Restart consul service
       systemd:
-        state: started
+        state: restarted
         name: consul
         daemon_reload: yes
     - name: Copy Mongo Envoy service to server
       copy: src=SystemdServices/envoy_mongo.service dest=/etc/systemd/system/envoy_mongo.service
     - name: Start Register Mongo Service with Envoy
       systemd:
-        state: started
+        state: restarted
         name: envoy_mongo
         daemon_reload: yes
 
@@ -131,7 +131,7 @@
       copy: src=SystemdServices/vault.service dest=/etc/systemd/system/vault.service
     - name: Start vault service
       systemd:
-        state: started
+        state: restarted
         name: vault
         daemon_reload: yes
     - pause:
@@ -145,20 +145,20 @@
       copy: src=SystemdServices/webblog.service dest=/etc/systemd/system/webblog.service
     - name: Start Webblog App service
       systemd:
-        state: started
+        state: restarted
         name: webblog
         daemon_reload: yes
     - name: Copy Webblog App service to server
       copy: src=WebblogServices/webblog_app_service.json dest=/etc/consul.d
     - name: Restart consul service
       systemd:
-        state: started
+        state: restarted
         name: consul
         daemon_reload: yes
     - name: Copy Webblog App service to server
       copy: src=SystemdServices/envoy_webblog.service dest=/etc/systemd/system/envoy_webblog.service
     - name: Start Register Webblog Service with Envoy
       systemd:
-        state: started
+        state: restarted
         name: envoy_webblog
         daemon_reload: yes
