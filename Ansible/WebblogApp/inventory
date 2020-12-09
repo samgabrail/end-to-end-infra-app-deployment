@@ -9,8 +9,8 @@ vault_version=1.6.0
 consul_version=1.9.0
 
 [consul_clients]
-webblog-app-vm ansible_host=samg-webblog-01.centralus.cloudapp.azure.com
-webblog-db-vm ansible_host=samg-webblog-02.centralus.cloudapp.azure.com
+webblog-app-vm ansible_host=<placeholder_app>
+webblog-db-vm ansible_host=<placeholder_db>
 
 [consul_server]
-webblog-consul-server ansible_host=samg-webblog-03.centralus.cloudapp.azure.com
+webblog-consul-server ansible_host=<placeholder_consul_server>
