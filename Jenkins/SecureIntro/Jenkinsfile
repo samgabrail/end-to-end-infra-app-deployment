@@ -78,7 +78,7 @@ node() {
         stage("Terraform to Provision the 2 App VMs in Azure") {
           sh '''
               cd /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs
-              terraform destroy
+              terraform destroy --auto-approve
               // terraform init
               // terraform fmt
               // terraform validate
