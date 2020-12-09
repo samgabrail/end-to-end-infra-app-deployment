@@ -5,3 +5,5 @@ Vault/pidfile
 Terraform/ProvisionAppVMs/client_secret.auto.tfvars
 Terraform/ProvisionAppVMs/client_id.auto.tfvars
 jenkins_data
+Terraform/ProvisionAppVMs/terraform.tfstate
+Terraform/ProvisionAppVMs/terraform.tfstate.backup

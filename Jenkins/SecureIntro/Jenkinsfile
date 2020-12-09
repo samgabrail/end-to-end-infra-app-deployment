@@ -76,14 +76,17 @@ node() {
         } 
 
         stage("Terraform to Provision the 2 App VMs in Azure") {
+          // Search for the output FQDN from Terraform using jq and feed it into the inventory file of Ansible
           sh '''
               cd /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs
-              terraform destroy --auto-approve
-              #terraform init
-              #terraform fmt
-              #terraform validate
-              #terraform apply --auto-approve
-              #terraform output > /tmp/tf_output.txt
+              #terraform destroy --auto-approve
+              terraform init
+              terraform fmt
+              terraform validate
+              terraform apply --auto-approve
+              sed -i "s/<placeholder_app>/$(terraform output -json webblog_public_dns | jq -r '.["samg-webblog-01-ip"]')/g" ../../Ansible/WebblogApp/inventory
+              sed -i "s/<placeholder_db>/$(terraform output -json webblog_public_dns | jq -r '.["samg-webblog-02-ip"]')/g" ../../Ansible/WebblogApp/inventory
+              sed -i "s/<placeholder_consul_server>/$(terraform output -json webblog_public_dns | jq -r '.["samg-webblog-03-ip"]')/g" ../../Ansible/WebblogApp/inventory
           '''
         }  
 
@@ -98,15 +101,8 @@ node() {
         stage("Ansible to Configure Webblog App VMs") {
           // We will need to install Vault to use the Vault agent and Consul for service mesh
           // Grab MongoDB Root Credentials from Vault and pass it to Ansible to create the MongoDB Container
-          // Search for the output FQDN from Terraform and feed it into the inventory file of Ansible
           sh '''
               cd /var/jenkins_home/workspace/Webblog_App@script/Ansible/WebblogApp
-              app=$(cat /tmp/tf_output.txt | grep -oP '01-ip = "\\K[^"]+')
-              db=$(cat /tmp/tf_output.txt | grep -oP '02-ip = "\\K[^"]+')
-              consulserver=$(cat /tmp/tf_output.txt | grep -oP '03-ip = "\\K[^"]+')
-              sed -i "s/<placeholder_app>/${app}/g" inventory
-              sed -i "s/<placeholder_db>/${db}/g" inventory
-              sed -i "s/<placeholder_consul_server>/${consulserver}/g" inventory
               ansible-playbook -i inventory --extra-vars "mongo_root_user=$(vault kv get -field=username internal/webblog/mongodb) mongo_root_password=$(vault kv get -field=password internal/webblog/mongodb)" appPlaybook.yaml
           '''
         } 
