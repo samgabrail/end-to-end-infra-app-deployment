@@ -57,6 +57,7 @@ resource "azurerm_subnet" "subnet" {
   address_prefixes       = [var.subnet_prefix]
 }
 
+
 resource "azurerm_network_security_group" "jenkins-sg" {
   name                = "${var.prefix}-sg"
   location            = var.location
