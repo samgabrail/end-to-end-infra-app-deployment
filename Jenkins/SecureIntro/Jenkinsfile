@@ -102,7 +102,6 @@ node() {
           // We will need to install Vault to use the Vault agent and Consul for service mesh
           // Grab MongoDB Root Credentials from Vault and pass it to Ansible to create the MongoDB Container
           sh '''
-              sleep 90
               cd /var/jenkins_home/workspace/Webblog_App@script/Ansible/WebblogApp
               ansible-playbook -i inventory --extra-vars "mongo_root_user=$(vault kv get -field=username internal/webblog/mongodb) mongo_root_password=$(vault kv get -field=password internal/webblog/mongodb)" appPlaybook.yaml
           '''

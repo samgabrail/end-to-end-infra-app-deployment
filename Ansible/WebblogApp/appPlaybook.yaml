@@ -3,13 +3,21 @@
   become_user: root
   become: true
   tasks:
-    - name: Install pip3
+    - name: Install pip3, unzip, and Envoy Dependencies
       apt:
-        name: python3-pip
-    - name: Install unzip
-      package:
-        name: unzip
         update_cache: yes
+        pkg:
+        - python3-pip
+        - unzip
+        - apt-transport-https
+        - ca-certificates
+        - curl
+        - gnupg-agent
+        - software-properties-common
+      register: result
+      until: result is not failed
+      retries: 5
+      delay: 5
     - name: Download and install consul binary
       unarchive:
         src: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip"
@@ -24,15 +32,6 @@
       file: state=directory path=/etc/consul.d
     - name: Copy consul service to server and clients
       copy: src=SystemdServices/consul.service dest=/etc/systemd/system/consul.service
-    - name: Install Envoy Dependencies
-      apt:
-        update_cache: yes
-        pkg:
-        - apt-transport-https
-        - ca-certificates
-        - curl
-        - gnupg-agent
-        - software-properties-common
     - name: Add an Apt signing key
       apt_key:
         url: https://getenvoy.io/gpg
