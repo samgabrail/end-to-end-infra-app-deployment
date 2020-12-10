@@ -16,8 +16,8 @@
         - software-properties-common
       register: result
       until: result is not failed
-      retries: 5
-      delay: 5
+      retries: 20
+      delay: 30
     - name: Download and install consul binary
       unarchive:
         src: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip"
