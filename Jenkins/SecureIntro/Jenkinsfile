@@ -78,11 +78,11 @@ node() {
           // Search for the output FQDN from Terraform using jq and feed it into the inventory file of Ansible
           sh '''
               cd /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs
-              #terraform destroy --auto-approve
-              terraform init
-              terraform fmt
-              terraform validate
-              terraform apply --auto-approve
+              terraform destroy --auto-approve
+              #terraform init
+              #terraform fmt
+              #terraform validate
+              #terraform apply --auto-approve
               sed -i "s/<placeholder_app>/$(terraform output -json webblog_public_dns | jq -r '.["samg-webblog-01-ip"]')/g" ../../Ansible/WebblogApp/inventory
               sed -i "s/<placeholder_db>/$(terraform output -json webblog_public_dns | jq -r '.["samg-webblog-02-ip"]')/g" ../../Ansible/WebblogApp/inventory
               sed -i "s/<placeholder_consul_server>/$(terraform output -json webblog_public_dns | jq -r '.["samg-webblog-03-ip"]')/g" ../../Ansible/WebblogApp/inventory
