@@ -3,9 +3,16 @@
   become_user: root
   become: true
   tasks:
-    - name: Install pip3
+    - name: Install pip3 and unzip
       apt:
-        name: python3-pip
+        update_cache: yes
+        pkg:
+        - python3-pip
+        - unzip
+      register: result
+      until: result is not failed
+      retries: 5
+      delay: 5
     - name: Install Docker module for Python
       pip:
         name: docker
@@ -41,44 +48,3 @@
         owner: adminuser
         group: adminuser
         mode: 0400
-    - name: Install unzip
-      package:
-        name: unzip
-        update_cache: yes
-    - name: Download and install consul binary
-      unarchive:
-        src: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip"
-        dest: /usr/local/bin/
-        remote_src: True
-    - name: Create consul config directory
-      file: state=directory path=/etc/consul.d
-    - name: Copy consul config to server
-      copy: src=consul_config.hcl dest=/etc/consul.d
-    - name: Copy consul service to server
-      copy: src=consul.service dest=/etc/systemd/system/consul.service
-    - name: Start consul service
-      systemd:
-        state: started
-        name: consul
-        daemon_reload: yes
-    - name: Install Envoy Dependencies
-      apt:
-        update_cache: yes
-        pkg:
-        - apt-transport-https
-        - ca-certificates
-        - curl
-        - gnupg-agent
-        - software-properties-common
-    - name: Add an Apt signing key
-      apt_key:
-        url: https://getenvoy.io/gpg
-        state: present
-    - name: Add Envoy repository into sources list
-      apt_repository:
-        repo: deb [arch=amd64] https://dl.bintray.com/tetrate/getenvoy-deb bionic stable
-        state: present
-    - name: Install Envoy
-      apt:
-        name: getenvoy-envoy
-        update_cache: yes
