@@ -3,6 +3,7 @@
   become_user: root
   become: true
   tasks:
+    # adding retries and delays for apt to catch up otherwise you get this error: Could not get lock /var/lib/dpkg/lock-frontend
     - name: Install pip3, unzip, and Envoy Dependencies
       apt:
         update_cache: yes

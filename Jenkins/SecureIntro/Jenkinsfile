@@ -79,11 +79,11 @@ node() {
           // Search for the output FQDN from Terraform using jq and feed it into the inventory file of Ansible
           sh '''
               cd /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs
-              #terraform destroy --auto-approve
-              terraform init
-              terraform fmt
-              terraform validate
-              terraform apply --auto-approve
+              terraform destroy --auto-approve
+              #terraform init
+              #terraform fmt
+              #terraform validate
+              #terraform apply --auto-approve
               sed -i "s/<placeholder_app>/$(terraform output -json webblog_public_dns | jq -r '.["samg-webblog-01-ip"]')/g" ../../Ansible/WebblogApp/inventory
               sed -i "s/<placeholder_db>/$(terraform output -json webblog_public_dns | jq -r '.["samg-webblog-02-ip"]')/g" ../../Ansible/WebblogApp/inventory
               sed -i "s/<placeholder_consul_server>/$(terraform output -json webblog_public_dns | jq -r '.["samg-webblog-03-ip"]')/g" ../../Ansible/WebblogApp/inventory
@@ -91,10 +91,10 @@ node() {
         }  
 
         stage("Create Role-id and Wrapped Secret-id for the Vault Agent on App VMs") {
-          // Ansible to send the Role-id and the Wrapped Secret-id
+          // Ansible to send the Role-id and the Wrapped Secret-id give 15 minutes for the wrap ttl to give enough time for ansible to prep the machines.
           sh '''
               vault read -field=role_id auth/approle/role/webblog-approle/role-id > /tmp/app_role_id
-              vault write -field=wrapping_token -wrap-ttl=200s -f auth/approle/role/webblog-approle/secret-id > /tmp/app_wrap_secret_id
+              vault write -field=wrapping_token -wrap-ttl=900s -f auth/approle/role/webblog-approle/secret-id > /tmp/app_wrap_secret_id
           '''
         }
 
