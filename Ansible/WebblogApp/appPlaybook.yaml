@@ -131,7 +131,7 @@
       copy: src=SystemdServices/vault.service dest=/etc/systemd/system/vault.service
     - name: Start vault service
       systemd:
-        state: restarted
+        state: started
         name: vault
         daemon_reload: yes
     - pause:
