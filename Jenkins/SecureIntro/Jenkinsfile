@@ -100,6 +100,7 @@ node() {
         stage("Ansible to Configure Webblog App VMs") {
           // We will need to install Vault to use the Vault agent and Consul for service mesh
           // Grab MongoDB Root Credentials from Vault and pass it to Ansible to create the MongoDB Container
+          // set +x below is to hide the response from vault with the mongo creds from displaying in Jenkins' logs
           sh '''
               set +x
               cd /var/jenkins_home/workspace/Webblog_App@script/Ansible/WebblogApp
