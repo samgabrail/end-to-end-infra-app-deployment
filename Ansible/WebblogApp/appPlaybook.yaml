@@ -24,11 +24,6 @@
         src: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip"
         dest: /usr/local/bin/
         remote_src: True
-    - name: Download and install consul binary
-      unarchive:
-        src: "https://releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip"
-        dest: /usr/local/bin/
-        remote_src: True
     - name: Create consul config directory
       file: state=directory path=/etc/consul.d
     - name: Copy consul service to server and clients
