@@ -1,3 +1,0 @@
-samg-webblog-01-ip = "samg-webblog-01.centralus.cloudapp.azure.com"
-samg-webblog-02-ip = "samg-webblog-02.centralus.cloudapp.azure.com"
-samg-webblog-03-ip = "samg-webblog-03.centralus.cloudapp.azure.com"

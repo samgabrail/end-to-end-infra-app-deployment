@@ -87,15 +87,17 @@ Below are some resources that talk about Secure Introduction and Secret Zero
 [HashiTalk on Vault Response Wrapping and Secret Zero](https://www.hashicorp.com/resources/vault-response-wrapping-makes-the-secret-zero-challenge-a-piece-of-cake)
 [GitHub Repo for above HashiTalk](https://github.com/misurellig/hashitalks-demo)
 
-#### Workflow
+#### Secure Introduction Workflow for Pipelines
 
-1. A Vault Admin creates a webblog app role-id
-2. An admin creates a Packer VM image in Azure with the webblog app role-id
-3. A Vault Admin provides Jenkins with a token with permissions to only write a wrapped Secret ID (Jenkins is a Vault trusted entity)
-4. Jenkins creates a wrapped Secret ID and delivers it to the pipeline
-5. The Jenkins pipeline unwraps the Secret ID and uses it with the Role ID to login into Vault
-6. The pipeline then retrieves the Azure creds and passes them to Terraform
-7. Terraform 
+1. A Vault Admin does the following
+   a. Create AppRoles for Jenkins node and the pipeline with policies in Vault
+   b. Insert AppRole auth creds into Jenkins node's Vault plugin
+   c. Deliver the Role ID for the pipeline into the Jenkinsfile
+2. The Jenkins node creates a wrapped secret ID for the pipeline
+3. The pipeline unwraps the secret ID and logs into Vault via AppRole for pipeline
+4. The pipeline retrieves the Terraform Cloud token
+5. The pipeline calls TFC to build the App VMs and generate dynamic Azure creds
+6. Terraform Builds the App VMs
 
 #### Create an Approle for the Jenkins Node
 

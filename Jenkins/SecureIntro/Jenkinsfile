@@ -1,5 +1,5 @@
 #!/usr/bin/env groovy
-def ROLE_ID = "11f503c6-9c4f-d223-7845-64b177864ddf" //this needs to be inserted manually by a Vault Admin
+def ROLE_ID = "11f503c6-9c4f-d223-7845-64b177864ddf" //this is the Role-id for the Pipeline and needs to be inserted manually by a Vault Admin
 def VAULT_ADDR = "http://vault.hashidemos.tekanaid.com:8200"
 env.VAULT_ADDR = VAULT_ADDR
 
@@ -14,7 +14,7 @@ node() {
         ]
     ]){
         // The Jenkins Node is only allowed to create the wrapped secret ID and with a wrap-ttl between 100s and 300s
-        stage ('Jenkins Node Creates a Wrapped Secret ID') {
+        stage ('Jenkins Node Creates a Wrapped Secret ID for the Pipeline') {
           
             def WRAPPED_SID = ""
             env.WRAPPED_SID = sh(
@@ -31,7 +31,7 @@ node() {
         //     script: "vault read -field=role_id auth/pipeline/role/pipeline-approle/role-id"
         //   )
         // }
-        stage("Jenkins Node Unwraps Secret ID"){
+        stage("Unwrap Secret ID"){
           def UNWRAPPED_SID = ""
           env.UNWRAPPED_SID = sh(
             returnStdout: true,
@@ -39,7 +39,7 @@ node() {
           )
         }
       }
-        stage("Pipeline Takes Over and Gets login token with Role ID and unwrapped Secret ID"){
+        stage("Pipeline gets login token with Role ID and unwrapped Secret ID"){
           def VAULT_LOGIN_TOKEN = ""
           env.VAULT_LOGIN_TOKEN = sh(
             returnStdout: true,
@@ -78,18 +78,18 @@ node() {
           // Search for the output FQDN from Terraform using jq and feed it into the inventory file of Ansible
           sh '''
               cd /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs
-              terraform destroy --auto-approve
-              #terraform init
-              #terraform fmt
-              #terraform validate
-              #terraform apply --auto-approve
+              #terraform destroy --auto-approve
+              terraform init
+              terraform fmt
+              terraform validate
+              terraform apply --auto-approve
               sed -i "s/<placeholder_app>/$(terraform output -json webblog_public_dns | jq -r '.["samg-webblog-01-ip"]')/g" ../../Ansible/WebblogApp/inventory
               sed -i "s/<placeholder_db>/$(terraform output -json webblog_public_dns | jq -r '.["samg-webblog-02-ip"]')/g" ../../Ansible/WebblogApp/inventory
               sed -i "s/<placeholder_consul_server>/$(terraform output -json webblog_public_dns | jq -r '.["samg-webblog-03-ip"]')/g" ../../Ansible/WebblogApp/inventory
           '''
         }  
 
-        stage("Create Role-id and Wrapped Secret-id for the Vault Agent on App VMs") {
+        stage("Create Role-id and Wrapped Secret-id for the Vault Agent on App VM") {
           // Ansible to send the Role-id and the Wrapped Secret-id give 15 minutes for the wrap ttl to give enough time for ansible to prep the machines.
           sh '''
               vault read -field=role_id auth/approle/role/webblog-approle/role-id > /tmp/app_role_id
