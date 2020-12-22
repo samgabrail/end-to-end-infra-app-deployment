@@ -2,6 +2,12 @@
 
 Here we trace the workflow of a developer deploying infrastructure and applications to Azure using Packer, GitHub, Jenkins, Terraform, Vault, Ansible, and Consul. We use our webblog application to demo this.
 
+There are 4 blog posts associated with this repo and talk about how everything works:
+- [Part 1: HashiCorp Vault Azure Secrets Engine](https://tekanaid.com/posts/hashicorp-vault-azure-secrets-engine-secure-your-azure-resources/)
+- [Part 2: Hashicorp Packer, Terraform, and Ansible to Set Up Jenkins](https://tekanaid.com/posts/hashicorp-packer-terraform-and-ansible-to-set-up-jenkins/)
+- [Part 3: The Secret Zero Problem Solved for HashiCorp Vault](https://tekanaid.com/posts/secret-zero-problem-solved-for-hashicorp-vault/)
+- [Part 4: Jenkins, Vault, Terraform, Ansible, and Consul End-to-End CI/CD Pipeline](https://tekanaid.com/posts/jenkins-vault-terraform-ansible-and-consul-end-to-end-ci-cd-pipeline/)
+
 ## Topics to Learn
 1. Vault Azure Secrets Engine
 2. Packer Images in Azure
