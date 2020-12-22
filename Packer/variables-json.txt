@@ -9,5 +9,4 @@
   "vm_size": "Standard_A0",
   "location": "Central US",
   "image_sku": "18.04-LTS"
-
 }

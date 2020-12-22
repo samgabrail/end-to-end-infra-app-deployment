@@ -21,7 +21,6 @@ node() {
               returnStdout: true,
               script: "vault write -field=wrapping_token -wrap-ttl=200s -f auth/pipeline/role/pipeline-approle/secret-id"
             )
-          
         }
         // the stage below doesn't work with the Vault Jenkins policy to write wrapped secrets only, an admin needs to manually provide the ROLE_ID as defined at the top of this file
         // stage ("Get Role ID for the pipeline AppRole") {
@@ -46,7 +45,6 @@ node() {
             script: "vault write -field=token auth/pipeline/login role_id=${ROLE_ID} secret_id=${UNWRAPPED_SID}"
           )
         }
-    
         stage("Log into Vault with Pipeline AppRole") {
           def VAULT_TOKEN = ""
           env.VAULT_TOKEN = sh(
@@ -54,7 +52,6 @@ node() {
             script: "vault login -field=token ${VAULT_LOGIN_TOKEN}"
           )
         }
-        
         stage("Create Azure Creds for Terraform to Provision App VMs") {
           sh(returnStdout:false, script: "vault read -format=json azure/creds/jenkins > /tmp/azure_creds.json")
           sh '''
@@ -63,8 +60,6 @@ node() {
           echo client_secret=$(cat /tmp/azure_creds.json | jq .data.client_secret) > /var/jenkins_home/workspace/Webblog_App@script/Terraform/ProvisionAppVMs/client_secret.auto.tfvars
           '''
         }
-
-
         stage("Retrieve TFC Token from Vault and Create the .terraformrc file to Authn into TFC") {
           sh '''
           cat <<EOF > /var/jenkins_home/.terraformrc
@@ -74,7 +69,6 @@ node() {
           EOF
           '''.stripIndent()
         } 
-
         stage("Terraform to Provision the 2 App VMs + Consul Server VM in Azure") {
           // Search for the output FQDN from Terraform using jq and feed it into the inventory file of Ansible
           sh '''
@@ -89,7 +83,6 @@ node() {
               sed -i "s/<placeholder_consul_server>/$(terraform output -json webblog_public_dns | jq -r '.["samg-webblog-03-ip"]')/g" ../../Ansible/WebblogApp/inventory
           '''
         }  
-
         stage("Create Role-id and Wrapped Secret-id for the Vault Agent on App VM") {
           // Ansible to send the Role-id and the Wrapped Secret-id give 15 minutes for the wrap ttl to give enough time for ansible to prep the machines.
           sh '''
@@ -97,7 +90,6 @@ node() {
               vault write -field=wrapping_token -wrap-ttl=900s -f auth/approle/role/webblog-approle/secret-id > /tmp/app_wrap_secret_id
           '''
         }
-
         stage("Ansible to Configure Webblog App VMs") {
           // We will need to install Vault to use the Vault agent and Consul for service mesh
           // Grab MongoDB Root Credentials from Vault and pass it to Ansible to create the MongoDB Container
